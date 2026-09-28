@@ -1,6 +1,6 @@
 /**
  * Base de datos local de abogados activos en Cali, Colombia (Mock Data Amplio)
- * Incluye cálculo de fórmula Haversine para distancias reales desde la posición del usuario.
+ * Incluye cálculo de fórmula Haversine, tiempos de respuesta (estimado y máximo) y desplazamientos.
  */
 
 const LAWYERS_DATA = [
@@ -12,6 +12,9 @@ const LAWYERS_DATA = [
     rating: 4.95,
     reviewsCount: 142,
     priceCOP: 95000,
+    travelPriceCOP: 180000,
+    estimatedResponseMin: 2,
+    maxResponseMin: 5,
     neighborhood: "Granada",
     lat: 3.4560,
     lng: -76.5350,
@@ -28,6 +31,9 @@ const LAWYERS_DATA = [
     rating: 4.88,
     reviewsCount: 98,
     priceCOP: 75000,
+    travelPriceCOP: 140000,
+    estimatedResponseMin: 3,
+    maxResponseMin: 8,
     neighborhood: "San Fernando",
     lat: 3.4310,
     lng: -76.5410,
@@ -44,6 +50,9 @@ const LAWYERS_DATA = [
     rating: 4.92,
     reviewsCount: 215,
     priceCOP: 85000,
+    travelPriceCOP: 160000,
+    estimatedResponseMin: 4,
+    maxResponseMin: 10,
     neighborhood: "Ciudad Jardín",
     lat: 3.3620,
     lng: -76.5290,
@@ -60,6 +69,9 @@ const LAWYERS_DATA = [
     rating: 4.98,
     reviewsCount: 84,
     priceCOP: 120000,
+    travelPriceCOP: 220000,
+    estimatedResponseMin: 1,
+    maxResponseMin: 4,
     neighborhood: "El Peñón",
     lat: 3.4490,
     lng: -76.5420,
@@ -76,6 +88,9 @@ const LAWYERS_DATA = [
     rating: 4.85,
     reviewsCount: 160,
     priceCOP: 70000,
+    travelPriceCOP: 130000,
+    estimatedResponseMin: 5,
+    maxResponseMin: 12,
     neighborhood: "Santa Mónica",
     lat: 3.4680,
     lng: -76.5260,
@@ -92,6 +107,9 @@ const LAWYERS_DATA = [
     rating: 4.90,
     reviewsCount: 110,
     priceCOP: 80000,
+    travelPriceCOP: 150000,
+    estimatedResponseMin: 3,
+    maxResponseMin: 7,
     neighborhood: "San Antonio",
     lat: 3.4460,
     lng: -76.5390,
@@ -108,6 +126,9 @@ const LAWYERS_DATA = [
     rating: 4.89,
     reviewsCount: 175,
     priceCOP: 90000,
+    travelPriceCOP: 170000,
+    estimatedResponseMin: 4,
+    maxResponseMin: 9,
     neighborhood: "Chipichape",
     lat: 3.4750,
     lng: -76.5280,
@@ -124,6 +145,9 @@ const LAWYERS_DATA = [
     rating: 4.91,
     reviewsCount: 67,
     priceCOP: 85000,
+    travelPriceCOP: 155000,
+    estimatedResponseMin: 6,
+    maxResponseMin: 15,
     neighborhood: "Valle del Lili",
     lat: 3.3750,
     lng: -76.5180,
@@ -140,6 +164,9 @@ const LAWYERS_DATA = [
     rating: 4.96,
     reviewsCount: 190,
     priceCOP: 100000,
+    travelPriceCOP: 190000,
+    estimatedResponseMin: 2,
+    maxResponseMin: 6,
     neighborhood: "Tequendama",
     lat: 3.4180,
     lng: -76.5430,
@@ -156,6 +183,9 @@ const LAWYERS_DATA = [
     rating: 4.87,
     reviewsCount: 130,
     priceCOP: 75000,
+    travelPriceCOP: 145000,
+    estimatedResponseMin: 3,
+    maxResponseMin: 8,
     neighborhood: "Versalles",
     lat: 3.4610,
     lng: -76.5290,
@@ -186,7 +216,6 @@ function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
  * Estima el tiempo de atención o desplazamiento en minutos según la distancia
  */
 function estimateETA(distanceKm) {
-  // Promedio de velocidad en ciudad 30 km/h + 2 min de preparación
   const minutes = Math.max(2, Math.round((distanceKm / 30) * 60) + 2);
   return minutes;
 }

@@ -1,6 +1,6 @@
 /**
  * Control Principal de la Aplicación uberlawyerBETA
- * Orquesta la interfaz de usuario, eventos, filtros, buscador y modales.
+ * Orquesta la interfaz de usuario, eventos, filtros, Apple Pay simulado y despacho presencial.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -79,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
     stepEmergencyCategories.classList.add('hidden');
     stepNonEmergencyForm.classList.remove('hidden');
 
-    // Por defecto seleccionar el valor inicial del select
     const areaSelect = document.getElementById('non-emergency-area');
     state.selectedSpecialty = areaSelect.value;
     updateLawyersList();
@@ -103,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const specPills = document.querySelectorAll('.btn-spec-pill');
   specPills.forEach(pill => {
     pill.addEventListener('click', () => {
-      // Remover clase seleccionada previa
       specPills.forEach(p => p.classList.remove('ring-2', 'ring-uber-green', 'bg-zinc-800'));
       pill.classList.add('ring-2', 'ring-uber-green', 'bg-zinc-800');
 
@@ -135,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnRecordAudio.addEventListener('click', async () => {
     if (!isRecording) {
-      // Iniciar grabación
       isRecording = true;
       recordIcon.className = "w-3.5 h-3.5 text-white animate-pulse";
       recordText.textContent = "Detener grabación...";
@@ -147,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
           timerEl.textContent = timerStr;
         },
         async (recordedBlob, base64Audio) => {
-          // Al finalizar grabación
           isRecording = false;
           recordIcon.className = "w-3.5 h-3.5 text-red-500";
           recordText.textContent = "Nota grabada ✓";
@@ -155,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
           btnPlayAudio.classList.remove('hidden');
           btnClearAudio.classList.remove('hidden');
 
-          // Enviar a la IA de Google Gemini para análisis
           aiFeedbackEl.classList.remove('hidden');
           aiFeedbackText.textContent = "Analizando nota de voz con IA de Google Gemini...";
 
@@ -166,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
               <strong>IA Gemini (${analysis.isSimulation ? 'Modo Test' : 'Real'}):</strong>
               Categoría recomendada: <span class="underline font-bold">${analysis.specialty}</span>. ${analysis.summary}
             `;
-            // Auto seleccionar especialidad recomendada por IA
             state.selectedSpecialty = analysis.specialty;
             updateLawyersList();
           } else {
@@ -182,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       );
     } else {
-      // Detener grabación manualmente
       AudioRecorder.stopRecording();
     }
   });
@@ -208,14 +201,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCloseMatch = document.getElementById('btn-close-match');
 
   btnMainSearch.addEventListener('click', () => {
-    // Mostrar radar wave animation
     btnRadarWave.classList.remove('hidden');
 
-    // Ejecutar animación de radar en mapa
     MapController.triggerRadarAnimation(2500, () => {
       btnRadarWave.classList.add('hidden');
 
-      // Seleccionar el abogado más cercano de la lista filtrada
       if (state.currentLawyers.length > 0) {
         const topLawyer = state.currentLawyers[0];
         showAssignedLawyerModal(topLawyer);
@@ -234,9 +224,18 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('match-lawyer-rating').textContent = lawyer.rating;
     document.getElementById('match-lawyer-tp').textContent = lawyer.tp;
     document.getElementById('match-lawyer-neighborhood').textContent = lawyer.neighborhood;
+
+    // Tiempos de respuesta estimado y máximo
+    document.getElementById('match-lawyer-response-times').textContent =
+      `Estimado ${lawyer.estimatedResponseMin} min • Máx ${lawyer.maxResponseMin} min`;
+
     document.getElementById('match-lawyer-distance').textContent = `${lawyer.distanceKm} km`;
     document.getElementById('match-lawyer-time').textContent = `${lawyer.etaMinutes} min`;
     document.getElementById('match-lawyer-price').textContent = `$${lawyer.priceCOP.toLocaleString('es-CO')}`;
+
+    // Precios de llamada y despacho
+    document.getElementById('btn-video-price').textContent = lawyer.priceCOP.toLocaleString('es-CO');
+    document.getElementById('btn-dispatch-price').textContent = lawyer.travelPriceCOP.toLocaleString('es-CO');
 
     lawyerMatchModal.classList.remove('hidden', 'translate-y-full');
     lawyerMatchModal.classList.add('translate-y-0');
@@ -267,7 +266,42 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // 6. Modal Configuración Google Gemini API Key
+  // 6. Modal Desplazamiento Presencial & Cobro Simulado Apple Pay
+  const btnOpenDispatchModal = document.getElementById('btn-open-dispatch-modal');
+  const btnCloseDispatch = document.getElementById('btn-close-dispatch');
+  const dispatchModal = document.getElementById('dispatch-modal');
+  const btnPayApplepay = document.getElementById('btn-pay-applepay');
+  const applepayBtnText = document.getElementById('applepay-btn-text');
+  const dispatchStatusMsg = document.getElementById('dispatch-status-msg');
+  const applePayAmount = document.getElementById('apple-pay-amount');
+
+  btnOpenDispatchModal.addEventListener('click', () => {
+    if (state.assignedLawyer) {
+      applePayAmount.textContent = `$${state.assignedLawyer.travelPriceCOP.toLocaleString('es-CO')} COP`;
+    }
+    dispatchStatusMsg.classList.add('hidden');
+    applepayBtnText.textContent = "PAGAR CON TOUCH ID / FACE ID";
+    dispatchModal.classList.remove('hidden');
+  });
+
+  btnCloseDispatch.addEventListener('click', () => {
+    dispatchModal.classList.add('hidden');
+  });
+
+  btnPayApplepay.addEventListener('click', () => {
+    // Animación de validación Touch ID / Face ID
+    applepayBtnText.textContent = "Procesando pago con Face ID...";
+    btnPayApplepay.disabled = true;
+
+    setTimeout(() => {
+      applepayBtnText.textContent = "✓ PAGO APROBADO CON APPLE PAY";
+      btnPayApplepay.disabled = false;
+      dispatchStatusMsg.classList.remove('hidden');
+    }, 1800);
+  });
+
+
+  // 7. Modal Configuración Google Gemini API Key
   const btnOpenApiModal = document.getElementById('btn-open-api-modal');
   const btnCloseApiModal = document.getElementById('btn-close-api-modal');
   const apiModal = document.getElementById('api-modal');
@@ -312,7 +346,6 @@ document.addEventListener('DOMContentLoaded', () => {
     apiTestResult.className = "text-xs p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300";
     apiTestResult.textContent = "Probando conexión con Google Gemini API...";
 
-    // Probar con prompt de texto simple usando la clave actual ingresada
     const tempKey = inputApiKey.value.trim();
     if (!tempKey) {
       apiTestResult.textContent = "Modo Test / Simulación activo (Sin clave). Todo funcionará con clasificación simulada.";
