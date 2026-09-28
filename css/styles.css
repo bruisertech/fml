@@ -1,0 +1,139 @@
+/* Custom Leaflet Map styling and Uber aesthetic tweaks */
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #000000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Dark mode overrides for Leaflet */
+.leaflet-container {
+  background: #0d0d0d !important;
+  font-family: inherit !important;
+}
+
+/* Custom Marker Styling */
+.user-location-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-location-dot {
+  width: 16px;
+  height: 16px;
+  background-color: #3b82f6;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
+  position: relative;
+}
+
+.user-location-pulse {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(59, 130, 246, 0.3);
+  animation: pulse-ring 1.8s infinite ease-out;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Lawyer Custom Pin Marker */
+.lawyer-marker-pin {
+  width: 36px;
+  height: 36px;
+  background: #000000;
+  border: 2px solid #05a357;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.lawyer-marker-pin:hover {
+  transform: scale(1.15);
+  border-color: #ffffff;
+}
+
+.lawyer-marker-pin img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Radar Scan Wave Effect on Map */
+.radar-scan-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 2px solid rgba(5, 163, 87, 0.6);
+  background: radial-gradient(circle, rgba(5, 163, 87, 0.15) 0%, rgba(5, 163, 87, 0) 70%);
+  pointer-events: none;
+  animation: radar-expand 2s infinite ease-out;
+  z-index: 15;
+}
+
+@keyframes radar-expand {
+  0% {
+    width: 50px;
+    height: 50px;
+    opacity: 1;
+  }
+  100% {
+    width: 600px;
+    height: 600px;
+    opacity: 0;
+  }
+}
+
+/* Leaflet Popup Tweaks */
+.leaflet-popup-content-wrapper {
+  background: rgba(18, 18, 18, 0.95) !important;
+  color: #ffffff !important;
+  border: 1px solid #2c2c2c !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.8) !important;
+  padding: 4px !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(18, 18, 18, 0.95) !important;
+  border: 1px solid #2c2c2c !important;
+}
+
+/* Leaflet Attribution styling */
+.leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: #8e8e93 !important;
+  font-size: 9px !important;
+  border-radius: 6px;
+  padding: 2px 6px !important;
+}
+
+.leaflet-control-attribution a {
+  color: #05a357 !important;
+}
