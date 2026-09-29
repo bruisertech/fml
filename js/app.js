@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     isEmergency: true,
     assignedLawyer: null,
     currentLawyers: [],
+    omittedLawyerIds: new Set(),
     pendingPaymentType: null // 'videocall' o 'dispatch'
   };
 
@@ -194,25 +195,53 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnRadarWave = document.getElementById('btn-radar-wave');
   const lawyerMatchModal = document.getElementById('lawyer-match-modal');
   const btnCloseMatch = document.getElementById('btn-close-match');
+  const btnNewSearch = document.getElementById('btn-new-search');
+  const btnOmitMainLawyer = document.getElementById('btn-omit-main-lawyer');
+  const secondaryLawyersContainer = document.getElementById('secondary-lawyers-container');
+  const secondaryLawyersCount = document.getElementById('secondary-lawyers-count');
 
-  btnMainSearch.addEventListener('click', () => {
+  function triggerSearchFlow() {
     btnRadarWave.classList.remove('hidden');
 
     MapController.triggerRadarAnimation(2500, () => {
       btnRadarWave.classList.add('hidden');
 
-      if (state.currentLawyers.length > 0) {
-        const topLawyer = state.currentLawyers[0];
-        showAssignedLawyerModal(topLawyer);
+      const availableLawyers = getAvailableLawyers();
+      if (availableLawyers.length > 0) {
+        showAssignedLawyerModal(availableLawyers[0]);
       } else {
-        alert("No se encontraron abogados disponibles en este momento.");
+        alert("No hay más abogados disponibles para esta categoría.");
       }
     });
+  }
+
+  btnMainSearch.addEventListener('click', () => {
+    triggerSearchFlow();
   });
 
+  if (btnNewSearch) {
+    btnNewSearch.addEventListener('click', () => {
+      state.omittedLawyerIds.clear();
+      lawyerMatchModal.classList.add('translate-y-full');
+      setTimeout(() => {
+        lawyerMatchModal.classList.add('hidden');
+        triggerSearchFlow();
+      }, 200);
+    });
+  }
+
+  function getAvailableLawyers() {
+    return state.currentLawyers.filter(l => !state.omittedLawyerIds.has(l.id));
+  }
+
   function showAssignedLawyerModal(lawyer) {
+    if (!lawyer) return;
     state.assignedLawyer = lawyer;
 
+    const availableLawyers = getAvailableLawyers();
+    const secondaryLawyers = availableLawyers.filter(l => l.id !== lawyer.id).slice(0, 2);
+
+    // Update main lawyer UI
     document.getElementById('match-lawyer-avatar').src = lawyer.avatar;
     document.getElementById('match-lawyer-name').textContent = lawyer.name;
     document.getElementById('match-lawyer-spec').textContent = `Especialista en ${lawyer.specialty}`;
@@ -230,8 +259,103 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-video-price').textContent = lawyer.priceCOP.toLocaleString('es-CO');
     document.getElementById('btn-dispatch-price').textContent = lawyer.travelPriceCOP.toLocaleString('es-CO');
 
+    // Render secondary lawyer cards
+    renderSecondaryLawyers(secondaryLawyers);
+
     lawyerMatchModal.classList.remove('hidden', 'translate-y-full');
     lawyerMatchModal.classList.add('translate-y-0');
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+
+  function renderSecondaryLawyers(lawyers) {
+    secondaryLawyersContainer.innerHTML = '';
+    secondaryLawyersCount.textContent = `${lawyers.length} más`;
+
+    if (lawyers.length === 0) {
+      secondaryLawyersContainer.innerHTML = `
+        <div class="p-3 bg-zinc-900/60 rounded-xl text-center text-xs text-zinc-400 border border-zinc-800">
+          No hay más alternativas cercanas disponibles en esta categoría.
+        </div>
+      `;
+      return;
+    }
+
+    lawyers.forEach((l, index) => {
+      const card = document.createElement('div');
+      card.className = "bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 rounded-xl p-2.5 transition flex items-center justify-between cursor-pointer group";
+
+      card.innerHTML = `
+        <div class="flex items-center space-x-3 min-w-0 select-none btn-select-secondary" data-id="${l.id}">
+          <img class="w-11 h-11 rounded-xl object-cover border border-zinc-700 group-hover:border-uber-green transition shrink-0" src="${l.avatar}" alt="${l.name}">
+          <div class="min-w-0">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-[9px] font-bold px-1.5 py-0.2 bg-zinc-800 text-zinc-300 rounded border border-zinc-700">Opción ${index + 2}</span>
+              <h5 class="text-xs font-bold text-white truncate group-hover:text-uber-green transition">${l.name}</h5>
+            </div>
+            <div class="text-[11px] text-zinc-400 flex items-center gap-2 mt-0.5">
+              <span class="text-uber-green font-semibold">${l.specialty}</span>
+              <span>•</span>
+              <span>★ ${l.rating}</span>
+              <span>•</span>
+              <span>${l.distanceKm} km (${l.etaMinutes} min)</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-omit-secondary text-xs text-zinc-400 hover:text-red-400 p-1.5 rounded-lg hover:bg-zinc-800 transition shrink-0 flex items-center gap-1" data-id="${l.id}" title="Omitir resultado">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      `;
+
+      secondaryLawyersContainer.appendChild(card);
+    });
+
+    // Add event listeners for secondary selection and omission
+    secondaryLawyersContainer.querySelectorAll('.btn-select-secondary').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = btn.getAttribute('data-id');
+        const selected = state.currentLawyers.find(l => l.id === id);
+        if (selected) {
+          showAssignedLawyerModal(selected);
+        }
+      });
+    });
+
+    secondaryLawyersContainer.querySelectorAll('.btn-omit-secondary').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        state.omittedLawyerIds.add(id);
+
+        const available = getAvailableLawyers();
+        if (available.length > 0) {
+          showAssignedLawyerModal(state.assignedLawyer);
+        } else {
+          alert("Has omitido todos los abogados disponibles.");
+          lawyerMatchModal.classList.add('translate-y-full');
+          setTimeout(() => lawyerMatchModal.classList.add('hidden'), 300);
+        }
+      });
+    });
+  }
+
+  if (btnOmitMainLawyer) {
+    btnOmitMainLawyer.addEventListener('click', () => {
+      if (state.assignedLawyer) {
+        state.omittedLawyerIds.add(state.assignedLawyer.id);
+
+        const available = getAvailableLawyers();
+        if (available.length > 0) {
+          showAssignedLawyerModal(available[0]);
+        } else {
+          alert("Has omitido todos los abogados disponibles.");
+          lawyerMatchModal.classList.add('translate-y-full');
+          setTimeout(() => lawyerMatchModal.classList.add('hidden'), 300);
+        }
+      }
+    });
   }
 
   btnCloseMatch.addEventListener('click', () => {
