@@ -1,6 +1,6 @@
 /**
- * Control Principal de la Aplicación uberlawyerBETA
- * Orquesta la interfaz de usuario, eventos, filtros, Apple Pay simulado y despacho presencial.
+ * Control Principal de la Aplicación findmylawyerBETA
+ * Orquesta la interfaz de usuario, eventos, filtros, Apple Pay simulado, ficha técnica y despacho presencial.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedSpecialty: null,
     isEmergency: true,
     assignedLawyer: null,
-    currentLawyers: []
+    currentLawyers: [],
+    pendingPaymentType: null // 'videocall' o 'dispatch'
   };
 
   // Inicialización de Lucide Icons
@@ -20,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Inicializar Mapa
   MapController.initMap();
 
-  // Cargar lista inicial de abogados en Cali
   function updateLawyersList() {
     const list = getLawyersWithDistance(
       MapController.userLocation.lat,
@@ -29,12 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     state.currentLawyers = list;
 
-    // Renderizar marcadores
     MapController.renderLawyerMarkers(list, (lawyer) => {
       showAssignedLawyerModal(lawyer);
     });
 
-    // Actualizar badge de especialidad
     const specBanner = document.getElementById('selected-spec-banner');
     const specName = document.getElementById('selected-spec-name');
     const countBadge = document.getElementById('lawyers-found-count');
@@ -50,13 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Ejecutar primera carga de abogados cuando el mapa o ubicación estén listos
   setTimeout(() => {
     updateLawyersList();
   }, 500);
 
 
-  // 2. Manejo de Cuestionario Flotante Superior (Emergency Yes/No)
+  // 2. Manejo de Cuestionario Flotante Superior
   const stepEmergencyQuestion = document.getElementById('step-emergency-question');
   const stepEmergencyCategories = document.getElementById('step-emergency-categories');
   const stepNonEmergencyForm = document.getElementById('step-non-emergency-form');
@@ -98,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLawyersList();
   });
 
-  // Selector de Especialidades Rápidas en Emergencia (Pills)
   const specPills = document.querySelectorAll('.btn-spec-pill');
   specPills.forEach(pill => {
     pill.addEventListener('click', () => {
@@ -111,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Select de Especialidad en No Emergencia
   const selectNonEmergencyArea = document.getElementById('non-emergency-area');
   selectNonEmergencyArea.addEventListener('change', (e) => {
     state.selectedSpecialty = e.target.value;
@@ -119,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // 3. Módulo de Grabación de Audio e IA Gemini
+  // 3. Audio Recorder e IA Gemini
   const btnRecordAudio = document.getElementById('btn-record-audio');
   const recordIcon = document.getElementById('record-icon');
   const recordText = document.getElementById('record-text');
@@ -194,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // 4. Botón Principal "BUSCAR ABOGADO" y Asignación de Abogado
+  // 4. Botón Principal y Asignación de Abogado
   const btnMainSearch = document.getElementById('btn-main-search');
   const btnRadarWave = document.getElementById('btn-radar-wave');
   const lawyerMatchModal = document.getElementById('lawyer-match-modal');
@@ -225,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('match-lawyer-tp').textContent = lawyer.tp;
     document.getElementById('match-lawyer-neighborhood').textContent = lawyer.neighborhood;
 
-    // Tiempos de respuesta estimado y máximo
     document.getElementById('match-lawyer-response-times').textContent =
       `Estimado ${lawyer.estimatedResponseMin} min • Máx ${lawyer.maxResponseMin} min`;
 
@@ -233,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('match-lawyer-time').textContent = `${lawyer.etaMinutes} min`;
     document.getElementById('match-lawyer-price').textContent = `$${lawyer.priceCOP.toLocaleString('es-CO')}`;
 
-    // Precios de llamada y despacho
     document.getElementById('btn-video-price').textContent = lawyer.priceCOP.toLocaleString('es-CO');
     document.getElementById('btn-dispatch-price').textContent = lawyer.travelPriceCOP.toLocaleString('es-CO');
 
@@ -249,38 +242,70 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // 5. Iniciar Videollamada
-  const btnStartVideocall = document.getElementById('btn-start-videocall');
-  const btnEndVideocall = document.getElementById('btn-end-videocall');
+  // 5. Ficha Técnica / Perfil de Abogado (Maletín)
+  const btnOpenBriefcase = document.getElementById('btn-open-briefcase');
+  const btnTriggerLawyerProfileAvatar = document.getElementById('btn-trigger-lawyer-profile-avatar');
+  const lawyerProfileModal = document.getElementById('lawyer-profile-modal');
+  const btnCloseProfileModal = document.getElementById('btn-close-profile-modal');
+  const btnCloseProfileOk = document.getElementById('btn-close-profile-ok');
 
-  btnStartVideocall.addEventListener('click', () => {
-    if (state.assignedLawyer) {
-      VideoCall.startCall(state.assignedLawyer, () => {
-        console.log("Videollamada finalizada.");
-      });
-    }
-  });
+  function openLawyerProfileModal() {
+    const l = state.assignedLawyer;
+    if (!l) return;
 
-  btnEndVideocall.addEventListener('click', () => {
-    VideoCall.endCall();
-  });
+    document.getElementById('profile-modal-avatar').src = l.avatar;
+    document.getElementById('profile-modal-name').textContent = l.name;
+    document.getElementById('profile-modal-spec').textContent = `Especialista en ${l.specialty}`;
+    document.getElementById('profile-modal-tp').textContent = l.tp;
+    document.getElementById('profile-modal-univ').textContent = l.university || "Universidad del Valle";
+    document.getElementById('profile-modal-bio').textContent = l.bio || l.description;
+    document.getElementById('profile-modal-exp').textContent = `${l.experienceYears || 10} Años de Experiencia`;
+    document.getElementById('profile-modal-cases').textContent = l.casesWon || "250+ Casos Exitosos";
+
+    lawyerProfileModal.classList.remove('hidden');
+  }
+
+  if (btnOpenBriefcase) btnOpenBriefcase.addEventListener('click', openLawyerProfileModal);
+  if (btnTriggerLawyerProfileAvatar) btnTriggerLawyerProfileAvatar.addEventListener('click', openLawyerProfileModal);
+
+  function closeLawyerProfileModal() {
+    lawyerProfileModal.classList.add('hidden');
+  }
+
+  if (btnCloseProfileModal) btnCloseProfileModal.addEventListener('click', closeLawyerProfileModal);
+  if (btnCloseProfileOk) btnCloseProfileOk.addEventListener('click', closeLawyerProfileModal);
 
 
-  // 6. Modal Desplazamiento Presencial & Cobro Simulado Apple Pay
+  // 6. Pasarela de Pago Apple Pay Simulado
+  const applePayModal = document.getElementById('apple-pay-modal');
+  const btnCloseApplePayModal = document.getElementById('btn-close-apple-pay-modal');
+  const applePayServiceTitle = document.getElementById('apple-pay-service-title');
+  const applePayModalAmount = document.getElementById('apple-pay-modal-amount');
+  const btnTriggerApplepayBiometric = document.getElementById('btn-trigger-applepay-biometric');
+  const applepayModalBtnText = document.getElementById('applepay-modal-btn-text');
+  const applepayModalStatusMsg = document.getElementById('applepay-modal-status-msg');
+
+  const btnStartVideocallCheckout = document.getElementById('btn-start-videocall-checkout');
   const btnOpenDispatchModal = document.getElementById('btn-open-dispatch-modal');
-  const btnCloseDispatch = document.getElementById('btn-close-dispatch');
   const dispatchModal = document.getElementById('dispatch-modal');
-  const btnPayApplepay = document.getElementById('btn-pay-applepay');
-  const applepayBtnText = document.getElementById('applepay-btn-text');
-  const dispatchStatusMsg = document.getElementById('dispatch-status-msg');
-  const applePayAmount = document.getElementById('apple-pay-amount');
+  const btnCloseDispatch = document.getElementById('btn-close-dispatch');
+  const btnProceedDispatchApplepay = document.getElementById('btn-proceed-dispatch-applepay');
 
+  // Trigger Pago Apple Pay para Videollamada
+  btnStartVideocallCheckout.addEventListener('click', () => {
+    if (!state.assignedLawyer) return;
+    state.pendingPaymentType = 'videocall';
+
+    applePayServiceTitle.textContent = "Asesoría por Videollamada Cifrada P2P";
+    applePayModalAmount.textContent = `$${state.assignedLawyer.priceCOP.toLocaleString('es-CO')} COP`;
+    applepayModalStatusMsg.classList.add('hidden');
+    applepayModalBtnText.textContent = "DOBLE CLIC / TOUCH ID PARA PAGAR";
+
+    applePayModal.classList.remove('hidden');
+  });
+
+  // Abrir formulario de desplazamiento
   btnOpenDispatchModal.addEventListener('click', () => {
-    if (state.assignedLawyer) {
-      applePayAmount.textContent = `$${state.assignedLawyer.travelPriceCOP.toLocaleString('es-CO')} COP`;
-    }
-    dispatchStatusMsg.classList.add('hidden');
-    applepayBtnText.textContent = "PAGAR CON TOUCH ID / FACE ID";
     dispatchModal.classList.remove('hidden');
   });
 
@@ -288,20 +313,59 @@ document.addEventListener('DOMContentLoaded', () => {
     dispatchModal.classList.add('hidden');
   });
 
-  btnPayApplepay.addEventListener('click', () => {
-    // Animación de validación Touch ID / Face ID
-    applepayBtnText.textContent = "Procesando pago con Face ID...";
-    btnPayApplepay.disabled = true;
+  // Continuar desde desplazamiento a Apple Pay
+  btnProceedDispatchApplepay.addEventListener('click', () => {
+    dispatchModal.classList.add('hidden');
+    state.pendingPaymentType = 'dispatch';
+
+    applePayServiceTitle.textContent = "Desplazamiento Presencial de Abogado";
+    applePayModalAmount.textContent = `$${state.assignedLawyer.travelPriceCOP.toLocaleString('es-CO')} COP`;
+    applepayModalStatusMsg.classList.add('hidden');
+    applepayModalBtnText.textContent = "DOBLE CLIC / TOUCH ID PARA PAGAR";
+
+    applePayModal.classList.remove('hidden');
+  });
+
+  btnCloseApplePayModal.addEventListener('click', () => {
+    applePayModal.classList.add('hidden');
+  });
+
+  // Ejecución de Biometría Touch ID / Face ID
+  btnTriggerApplepayBiometric.addEventListener('click', () => {
+    applepayModalBtnText.textContent = "Procesando biometría con Face ID...";
+    btnTriggerApplepayBiometric.disabled = true;
 
     setTimeout(() => {
-      applepayBtnText.textContent = "✓ PAGO APROBADO CON APPLE PAY";
-      btnPayApplepay.disabled = false;
-      dispatchStatusMsg.classList.remove('hidden');
-    }, 1800);
+      applepayModalBtnText.textContent = "✓ PAGO APROBADO CON APPLE PAY";
+      btnTriggerApplepayBiometric.disabled = false;
+      applepayModalStatusMsg.classList.remove('hidden');
+
+      setTimeout(() => {
+        applePayModal.classList.add('hidden');
+
+        if (state.pendingPaymentType === 'videocall') {
+          VideoCall.startCall(state.assignedLawyer, () => {
+            console.log("Videollamada terminada.");
+          });
+        } else if (state.pendingPaymentType === 'dispatch') {
+          alert("¡Pago aprobado! El abogado ha sido notificado y está en camino a tu dirección en Cali.");
+        }
+      }, 1200);
+
+    }, 1600);
   });
 
 
-  // 7. Modal Configuración Google Gemini API Key
+  // 7. Controles de Llamada
+  const btnEndVideocall = document.getElementById('btn-end-videocall');
+  if (btnEndVideocall) {
+    btnEndVideocall.addEventListener('click', () => {
+      VideoCall.endCall();
+    });
+  }
+
+
+  // 8. Modal Configuración Google Gemini API Key
   const btnOpenApiModal = document.getElementById('btn-open-api-modal');
   const btnCloseApiModal = document.getElementById('btn-close-api-modal');
   const apiModal = document.getElementById('api-modal');

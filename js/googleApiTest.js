@@ -4,8 +4,8 @@
  */
 
 const GoogleApiTest = {
-  STORAGE_KEY: 'uberlawyer_gemini_api_key',
-  MODEL_KEY: 'uberlawyer_gemini_model',
+  STORAGE_KEY: 'findmylawyer_gemini_api_key',
+  MODEL_KEY: 'findmylawyer_gemini_model',
 
   getApiKey() {
     return localStorage.getItem(this.STORAGE_KEY) || '';
@@ -32,7 +32,6 @@ const GoogleApiTest = {
       console.log("Generando clasificación simulada en Modo Test...");
       await new Promise(resolve => setTimeout(resolve, 1200));
 
-      // Simulación basada en palabras clave si hay texto, o aleatoria
       let specialty = "Penal";
       let summary = "Caso de posible detención o citación con carácter de urgencia. Se recomienda asesoría penal inmediata.";
 
@@ -64,10 +63,10 @@ const GoogleApiTest = {
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
 
       const systemPrompt = `
-Eres un asistente legal experto de UberLawyer Cali Colombia.
+Eres un asistente legal experto de Find My Lawyer Cali Colombia.
 Analiza la siguiente nota de voz o descripción de caso legal expresado por el cliente.
 Tu tarea es clasificar el caso en UNA de las siguientes especialidades exactas: Penal, Civil, Tránsito, Narcotráfico, Laboral, Familia, Comercial, Administrativo.
-Responde estrictamente en formato JSON válido con la siguiente estructura (sin Markdown ni backticks):
+Responde strictly en formato JSON válido con la siguiente estructura (sin Markdown ni backticks):
 {
   "specialty": "Penal",
   "urgency": "Alta|Media|Baja",
@@ -114,7 +113,6 @@ Responde estrictamente en formato JSON válido con la siguiente estructura (sin 
       const data = await response.json();
       const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-      // Limpiar backticks markdown si Gemini los genera
       const cleanJsonStr = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
       const parsed = JSON.parse(cleanJsonStr);
 
