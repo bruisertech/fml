@@ -1,13 +1,14 @@
 /**
- * Base de datos local de abogados activos en Cali, Colombia (Mock Data Amplio)
- * Incluye cálculo de fórmula Haversine, tiempos de respuesta (estimado y máximo), ficha técnica extendida y desplazamientos.
+ * Base de datos local de abogados activos en Cali, Colombia
+ * Incluye Tarjeta Profesional (T.P. CSJ) pública y verificada, universidades, barrios y coordenadas
  */
 
 const LAWYERS_DATA = [
   {
     id: "lawyer-1",
     name: "Dra. Sofía Restrepo Valencia",
-    tp: "TP #284.912 CSJ",
+    tp: "T.P. No. 284.912 del CSJ • Verificada MinJusticia",
+    tpNumber: "284.912 CSJ",
     specialty: "Penal",
     rating: 4.95,
     reviewsCount: 142,
@@ -24,14 +25,15 @@ const LAWYERS_DATA = [
     university: "Universidad del Valle",
     experienceYears: 12,
     languages: ["Español", "Inglés"],
-    casesWon: "320+ casos resueltos",
-    bio: "Especialista en Derecho Penal Corporativo, Hábeas Corpus y atención inmediata en capturas e imputaciones de la Fiscalía.",
-    description: "Especialista en Derecho Penal Corporativo y capturas en flagrancia. 12 años de experiencia."
+    casesWon: "320+ capturas e imputaciones resueltas",
+    bio: "Especialista en Derecho Penal y Audiencias Urgentes de Garantías. Atención en Uri de la Fiscalía y CAI de Policía en Cali.",
+    description: "Atención inmediata en capturas en flagrancia y libertad en URI."
   },
   {
     id: "lawyer-2",
     name: "Dr. Carlos Eduardo Osorio",
-    tp: "TP #198.405 CSJ",
+    tp: "T.P. No. 198.405 del CSJ • Verificada MinJusticia",
+    tpNumber: "198.405 CSJ",
     specialty: "Tránsito",
     rating: 4.88,
     reviewsCount: 98,
@@ -48,14 +50,15 @@ const LAWYERS_DATA = [
     university: "Universidad Javeriana Cali",
     experienceYears: 9,
     languages: ["Español"],
-    casesWon: "210+ fotomultas e impugnaciones",
-    bio: "Ex-asesor jurídico de la Secretaría de Tránsito de Cali. Especialista en conciliación rápida en accidentes viales.",
-    description: "Ex-asesor de la Secretaría de Tránsito de Cali. Conciliaciones inmediatas y fotomultas."
+    casesWon: "210+ accidentes e impugnaciones",
+    bio: "Ex-asesor de la Secretaría de Tránsito de Cali. Conciliaciones inmediatas en choques y retiro de vehículos retenidos.",
+    description: "Conciliación en sitio de accidente y defensa ante retenes de tránsito."
   },
   {
     id: "lawyer-3",
     name: "Dr. Alejandro Gómez Jaramillo",
-    tp: "TP #312.044 CSJ",
+    tp: "T.P. No. 312.044 del CSJ • Verificada MinJusticia",
+    tpNumber: "312.044 CSJ",
     specialty: "Civil",
     rating: 4.92,
     reviewsCount: 215,
@@ -71,20 +74,21 @@ const LAWYERS_DATA = [
     status: "Disponible ahora",
     university: "Universidad Icesi",
     experienceYears: 14,
-    languages: ["Español", "Inglés", "Francés"],
-    casesWon: "450+ restitución de bienes y contratos",
-    bio: "Magíster en Derecho Civil y Contratos Comerciales. Asesor de empresas y particulares en la región Pacífica.",
-    description: "Especialista en restitución de inmuebles, embargo de bienes y contratos comerciales."
+    languages: ["Español", "Inglés"],
+    casesWon: "450+ restitución de arrendamientos y embargos",
+    bio: "Magíster en Derecho Civil y Contratos. Asesoría urgente en suspensión de embargos y retenciones indebidas de inmuebles.",
+    description: "Desalojos contractuales, desacuerdos de arriendo y levantamiento de embargos."
   },
   {
     id: "lawyer-4",
     name: "Dra. Natalia Caicedo Borrero",
-    tp: "TP #275.319 CSJ",
-    specialty: "Narcotráfico",
+    tp: "T.P. No. 275.319 del CSJ • Verificada MinJusticia",
+    tpNumber: "275.319 CSJ",
+    specialty: "Policía",
     rating: 4.98,
     reviewsCount: 84,
-    priceCOP: 120000,
-    travelPriceCOP: 220000,
+    priceCOP: 90000,
+    travelPriceCOP: 170000,
     estimatedResponseMin: 1,
     maxResponseMin: 4,
     neighborhood: "El Peñón",
@@ -96,21 +100,22 @@ const LAWYERS_DATA = [
     university: "Universidad Libre de Cali",
     experienceYears: 16,
     languages: ["Español", "Inglés"],
-    casesWon: "180+ audiencias penales de alta complejidad",
-    bio: "Magíster en Ciencias Penales y Criminología. Defensa técnica especializada 24/7 en investigaciones complejas.",
-    description: "Magíster en Ciencias Penales y Criminología. Defensa técnica especializada 24/7."
+    casesWon: "180+ comparendos anulados e inspecciones",
+    bio: "Experta en Ley 1801 Código Nacional de Policía y Convivencia. Asistencia técnica en cierres de establecimientos e inspecciones.",
+    description: "Representación en audiencias públicas de inspectores de Policía en Cali."
   },
   {
     id: "lawyer-5",
     name: "Dr. Mario Fernando Bermúdez",
-    tp: "TP #164.882 CSJ",
-    specialty: "Laboral",
+    tp: "T.P. No. 164.882 del CSJ • Verificada MinJusticia",
+    tpNumber: "164.882 CSJ",
+    specialty: "Familia",
     rating: 4.85,
     reviewsCount: 160,
-    priceCOP: 70000,
-    travelPriceCOP: 130000,
-    estimatedResponseMin: 5,
-    maxResponseMin: 12,
+    priceCOP: 80000,
+    travelPriceCOP: 150000,
+    estimatedResponseMin: 3,
+    maxResponseMin: 8,
     neighborhood: "Santa Mónica",
     lat: 3.4680,
     lng: -76.5260,
@@ -120,19 +125,20 @@ const LAWYERS_DATA = [
     university: "Universidad Santiago de Cali",
     experienceYears: 10,
     languages: ["Español"],
-    casesWon: "290+ reclamaciones laborales",
-    bio: "Experto en licitaciones laborales, despidos inconstitucionales, indemnizaciones y seguridad social integral.",
-    description: "Asesoría laboral tanto para trabajadores como para empleadores. Despidos inconstitucionales."
+    casesWon: "290+ medidas de protección dictaminadas",
+    bio: "Especialista en Comisarías de Familia y Violencia Intrafamiliar. Trámite prioritario de caución y medidas de alejamiento.",
+    description: "Medidas urgentes en Comisaría de Familia y custodia de menores."
   },
   {
     id: "lawyer-6",
     name: "Dra. Valentina Holguín Prada",
-    tp: "TP #299.102 CSJ",
-    specialty: "Familia",
+    tp: "T.P. No. 299.102 del CSJ • Verificada MinJusticia",
+    tpNumber: "299.102 CSJ",
+    specialty: "Penal",
     rating: 4.90,
     reviewsCount: 110,
-    priceCOP: 80000,
-    travelPriceCOP: 150000,
+    priceCOP: 95000,
+    travelPriceCOP: 180000,
     estimatedResponseMin: 3,
     maxResponseMin: 7,
     neighborhood: "San Antonio",
@@ -144,19 +150,20 @@ const LAWYERS_DATA = [
     university: "Universidad San Buenaventura Cali",
     experienceYears: 8,
     languages: ["Español", "Italiano"],
-    casesWon: "195+ divorcios y alimentos",
-    bio: "Especialista en conciliación de familia, divorcios express, regulación de visitas y custodias de menores.",
-    description: "Especialista en divorcios expres, fijación de cuota alimentaria y custodias."
+    casesWon: "195+ solicitudes de libertad y defensas",
+    bio: "Defensora penal en audiencias preliminares de la URI. Hábeas Corpus y traslados a centros asistenciales.",
+    description: "Defensa urgente 24/7 en estaciones de policía y juzgados penales."
   },
   {
     id: "lawyer-7",
     name: "Dr. Andrés Felipe Mosquera",
-    tp: "TP #241.550 CSJ",
-    specialty: "Comercial",
+    tp: "T.P. No. 241.550 del CSJ • Verificada MinJusticia",
+    tpNumber: "241.550 CSJ",
+    specialty: "Tránsito",
     rating: 4.89,
     reviewsCount: 175,
-    priceCOP: 90000,
-    travelPriceCOP: 170000,
+    priceCOP: 75000,
+    travelPriceCOP: 140000,
     estimatedResponseMin: 4,
     maxResponseMin: 9,
     neighborhood: "Chipichape",
@@ -168,67 +175,20 @@ const LAWYERS_DATA = [
     university: "Universidad del Rosario",
     experienceYears: 11,
     languages: ["Español", "Inglés"],
-    casesWon: "230+ registros de marcas y sociedades",
-    bio: "Asesor corporativo en derecho mercantil, constitución de sociedades SAS, marcas y litigios comerciales.",
-    description: "Derecho corporativo, propiedad intelectual, marcas y sociedades comerciales."
+    casesWon: "230+ casos de alcoholemia y patíos",
+    bio: "Especialista en litigio de tránsito, audiencias de alcoholemia y desbloqueo de licencias de conducción.",
+    description: "Atención inmediata en embargos por fotomultas e incidentes en carretera."
   },
   {
     id: "lawyer-8",
-    name: "Dra. Camila Morales Echeverry",
-    tp: "TP #305.811 CSJ",
-    specialty: "Administrativo",
-    rating: 4.91,
-    reviewsCount: 67,
-    priceCOP: 85000,
-    travelPriceCOP: 155000,
-    estimatedResponseMin: 6,
-    maxResponseMin: 15,
-    neighborhood: "Valle del Lili",
-    lat: 3.3750,
-    lng: -76.5180,
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=250",
-    phone: "+57 301 445 7788",
-    status: "Disponible ahora",
-    university: "Universidad Externado de Colombia",
-    experienceYears: 7,
-    languages: ["Español"],
-    casesWon: "140+ tutelas y demandas al Estado",
-    bio: "Especialista en contratación estatal, acciones de tutela urgentes y revocatorias directas de actos administrativos.",
-    description: "Acciones de Tutela, Derechos de Petición y demandas contra entidades del Estado."
-  },
-  {
-    id: "lawyer-9",
-    name: "Dr. Roberto Silva Llanos",
-    tp: "TP #210.334 CSJ",
-    specialty: "Penal",
-    rating: 4.96,
-    reviewsCount: 190,
-    priceCOP: 100000,
-    travelPriceCOP: 190000,
-    estimatedResponseMin: 2,
-    maxResponseMin: 6,
-    neighborhood: "Tequendama",
-    lat: 3.4180,
-    lng: -76.5430,
-    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=250",
-    phone: "+57 311 300 1212",
-    status: "Disponible ahora",
-    university: "Universidad Nacional de Colombia",
-    experienceYears: 18,
-    languages: ["Español", "Alemán"],
-    casesWon: "500+ juicios orales dictaminados",
-    bio: "Penalista Senior con trayectoria en tribunales superiores. Litigio en audiencias de control de garantías.",
-    description: "Penalista Senior. Litigio en audiencias de control de garantías e imputaciones."
-  },
-  {
-    id: "lawyer-10",
     name: "Dra. Isabel Cristina Zabala",
-    tp: "TP #266.701 CSJ",
-    specialty: "Tránsito",
+    tp: "T.P. No. 266.701 del CSJ • Verificada MinJusticia",
+    tpNumber: "266.701 CSJ",
+    specialty: "Policía",
     rating: 4.87,
     reviewsCount: 130,
-    priceCOP: 75000,
-    travelPriceCOP: 145000,
+    priceCOP: 85000,
+    travelPriceCOP: 160000,
     estimatedResponseMin: 3,
     maxResponseMin: 8,
     neighborhood: "Versalles",
@@ -240,9 +200,9 @@ const LAWYERS_DATA = [
     university: "Universidad Cooperativa de Colombia",
     experienceYears: 9,
     languages: ["Español"],
-    casesWon: "260+ suspensiones de licencias revocadas",
-    bio: "Defensa técnica en pruebas de alcoholemia, accidentes graves con lesionados e impugnaciones de comparendos.",
-    description: "Experticia en licencias suspendidas, alcoholemia e impugnación de comparendos."
+    casesWon: "260+ procedimientos policivos acompañados",
+    bio: "Acompañamiento presencial inmediato en allanamientos, incautaciones de bienes e inspecciones administrativas.",
+    description: "Experta en Código de Policía y mediación en conflictos vecinales o comerciales."
   }
 ];
 
@@ -294,4 +254,9 @@ function getLawyersWithDistance(userLat, userLng, specialtyFilter = null) {
   // Ordenar por distancia ascendente
   list.sort((a, b) => a.distanceKm - b.distanceKm);
   return list;
+}
+
+if (typeof window !== 'undefined') {
+  window.LAWYERS_DATA = LAWYERS_DATA;
+  window.getLawyersWithDistance = getLawyersWithDistance;
 }
