@@ -1,115 +1,123 @@
 /**
- * Controlador del Mapa Leaflet para uberlawyerBETA
- * Administra el mapa centrado en Cali, geolocalización, marcadores de abogados y efectos de escaneo radar.
+ * Controlador del Mapa Interactivo Leaflet para Abogao (Cali, Colombia)
+ * Posicionamiento, pines con pulso esmeralda neón, popups con T.P. y radar de búsqueda.
  */
 
 const MapController = {
   map: null,
-  userLocation: { lat: 3.4516, lng: -76.5320 }, // Plazoleta Jairo Varela, Cali por defecto
+  userLocation: CONFIG ? CONFIG.CALI_COORDS : { lat: 3.4516, lng: -76.5320 },
   userMarker: null,
   lawyerMarkers: [],
   radarOverlayEl: null,
 
   initMap() {
-    // Inicializar mapa centrado en Cali, Colombia
+    const defaultCoords = this.userLocation;
     this.map = L.map('map', {
       zoomControl: false,
       attributionControl: true
-    }).setView([this.userLocation.lat, this.userLocation.lng], 14);
+    }).setView([defaultCoords.lat, defaultCoords.lng], CONFIG ? CONFIG.DEFAULT_ZOOM : 14);
 
-    // Mosaicos minimalistas de OpenStreetMap / Carto
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    // Dark CartoDB Matter tile layer
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
       maxZoom: 19
     }).addTo(this.map);
 
-    // Mover control de zoom a esquina inferior derecha
     L.control.zoom({ position: 'bottomright' }).addTo(this.map);
 
-    // Intentar geolocalización del usuario
-    this.locateUser();
+    this.renderUserMarker(defaultCoords);
+    this.locateUserBrowser();
   },
 
-  locateUser() {
-    if ("geolocation" in navigator) {
+  locateUserBrowser() {
+    if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          this.userLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          this.updateUserMarker();
-          this.map.setView([this.userLocation.lat, this.userLocation.lng], 14, { animate: true });
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          // Si el usuario está cerca de Cali, actualizar
+          if (lat > 3.0 && lat < 4.0 && lng > -77.0 && lng < -76.0) {
+            this.userLocation = { lat, lng };
+            this.map.setView([lat, lng], 14);
+            this.renderUserMarker(this.userLocation);
+          }
         },
         (error) => {
-          console.warn("Geolocalización denegada o con error. Usando centro de Cali por defecto.", error);
-          this.updateUserMarker();
+          console.warn("Geolocalización no otorgada. Usando Cali Centro por defecto.");
         },
         { enableHighAccuracy: true, timeout: 5000 }
       );
-    } else {
-      this.updateUserMarker();
     }
   },
 
-  updateUserMarker() {
+  renderUserMarker(coords) {
     if (this.userMarker) {
       this.map.removeLayer(this.userMarker);
     }
 
-    const customUserIcon = L.divIcon({
+    const userIcon = L.divIcon({
       className: 'user-location-marker',
-      html: `<div class="user-location-dot"><div class="user-location-pulse"></div></div>`,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12]
+      html: `
+        <div class="user-location-pulse"></div>
+        <div class="user-location-dot"></div>
+      `,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
     });
 
-    this.userMarker = L.marker([this.userLocation.lat, this.userLocation.lng], { icon: customUserIcon })
-      .addTo(this.map)
-      .bindPopup('<div class="text-xs font-bold text-white px-1 py-0.5">📍 Tu ubicación actual en Cali</div>');
+    this.userMarker = L.marker([coords.lat, coords.lng], { icon: userIcon }).addTo(this.map);
+    this.userMarker.bindTooltip("Tu Ubicación en Cali", { permanent: false, direction: "top" });
   },
 
-  renderLawyerMarkers(lawyersList, onLawyerSelectCallback) {
-    // Limpiar marcadores existentes
-    this.lawyerMarkers.forEach(m => this.map.removeLayer(m));
-    this.lawyerMarkers = [];
+  renderLawyerMarkers(lawyers, onLawyerSelectCallback) {
+    this.clearLawyerMarkers();
 
-    lawyersList.forEach(lawyer => {
-      const customLawyerIcon = L.divIcon({
-        className: 'custom-lawyer-pin-wrap',
+    lawyers.forEach((lawyer) => {
+      const lawyerIcon = L.divIcon({
+        className: 'custom-lawyer-icon',
         html: `
-          <div class="lawyer-marker-pin" id="pin-${lawyer.id}">
-            <img src="${lawyer.avatar}" alt="${lawyer.name}">
+          <div class="lawyer-marker-pin" title="${lawyer.name}">
+            <img src="${lawyer.avatar}" alt="${lawyer.name}" />
           </div>
         `,
         iconSize: [36, 36],
         iconAnchor: [18, 18]
       });
 
+      const marker = L.marker([lawyer.lat, lawyer.lng], { icon: lawyerIcon }).addTo(this.map);
+
       const popupContent = `
-        <div class="p-2 space-y-1.5 font-sans min-w-[200px]">
+        <div class="p-2 space-y-1.5 text-white max-w-[210px]">
           <div class="flex items-center space-x-2">
-            <img src="${lawyer.avatar}" class="w-8 h-8 rounded-full object-cover border border-uber-green">
-            <div>
-              <div class="text-xs font-bold text-white leading-tight">${lawyer.name}</div>
-              <div class="text-[10px] text-uber-green font-semibold">${lawyer.specialty} • ${lawyer.neighborhood}</div>
+            <img src="${lawyer.avatar}" class="w-9 h-9 rounded-xl object-cover border border-emerald-400" />
+            <div class="min-w-0">
+              <div class="text-xs font-bold truncate">${lawyer.name}</div>
+              <div class="text-[10px] text-emerald-400 font-semibold">${lawyer.specialty}</div>
             </div>
           </div>
-          <div class="flex items-center justify-between text-[11px] pt-1 border-t border-zinc-800 text-zinc-300">
+          <div class="p-1 px-1.5 bg-emerald-950/80 border border-emerald-500/40 rounded text-[9px] font-bold text-emerald-300">
+            ✓ ${lawyer.tp}
+          </div>
+          <div class="text-[10px] text-slate-300 flex items-center justify-between">
             <span>★ ${lawyer.rating}</span>
             <span>${lawyer.distanceKm} km (${lawyer.etaMinutes} min)</span>
-            <span class="font-bold text-white">$${lawyer.priceCOP.toLocaleString('es-CO')}</span>
           </div>
+          <button class="btn-popup-select w-full mt-1 py-1 bg-emerald-500 hover:bg-emerald-600 text-black text-[10px] font-extrabold rounded-lg transition" data-id="${lawyer.id}">
+            Ver Opción
+          </button>
         </div>
       `;
 
-      const marker = L.marker([lawyer.lat, lawyer.lng], { icon: customLawyerIcon })
-        .addTo(this.map)
-        .bindPopup(popupContent);
+      marker.bindPopup(popupContent, { closeButton: false });
 
-      marker.on('click', () => {
-        if (onLawyerSelectCallback) {
-          onLawyerSelectCallback(lawyer);
+      marker.on('popupopen', () => {
+        const btn = document.querySelector(`.btn-popup-select[data-id="${lawyer.id}"]`);
+        if (btn) {
+          btn.addEventListener('click', () => {
+            if (onLawyerSelectCallback) onLawyerSelectCallback(lawyer);
+          });
         }
       });
 
@@ -117,23 +125,33 @@ const MapController = {
     });
   },
 
-  triggerRadarAnimation(durationMs = 2500, callback) {
-    if (!this.radarOverlayEl) {
-      this.radarOverlayEl = document.createElement('div');
-      this.radarOverlayEl.className = 'radar-scan-overlay';
-      document.body.appendChild(this.radarOverlayEl);
+  clearLawyerMarkers() {
+    this.lawyerMarkers.forEach(m => this.map.removeLayer(m));
+    this.lawyerMarkers = [];
+  },
+
+  triggerRadarAnimation(durationMs = 2500, onComplete) {
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) return;
+
+    if (this.radarOverlayEl) {
+      this.radarOverlayEl.remove();
     }
 
-    this.radarOverlayEl.style.display = 'block';
-
-    // Animación de pulso de la cámara centrada en el usuario
-    this.map.flyTo([this.userLocation.lat, this.userLocation.lng], 15, { duration: 1.5 });
+    this.radarOverlayEl = document.createElement('div');
+    this.radarOverlayEl.className = 'radar-scan-overlay';
+    mapContainer.appendChild(this.radarOverlayEl);
 
     setTimeout(() => {
       if (this.radarOverlayEl) {
-        this.radarOverlayEl.style.display = 'none';
+        this.radarOverlayEl.remove();
+        this.radarOverlayEl = null;
       }
-      if (callback) callback();
+      if (onComplete) onComplete();
     }, durationMs);
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.MapController = MapController;
+}
