@@ -242,7 +242,7 @@
         <span id="btn-search-text">BUSCAR ABOGADO EN CALI</span>
       </div>
       <!-- RADAR SCAN ANIMATION OVERLAY CORRECTED -->
-      <div id="btn-radar-wave" class="hidden absolute inset-0 bg-uber-green rounded-2xl flex items-center justify-center text-white font-bold text-sm tracking-wider">
+      <div id="btn-radar-wave" class="hidden absolute inset-0 z-30 bg-uber-green rounded-2xl flex items-center justify-center text-white font-bold text-sm tracking-wider w-full h-full">
         <i data-lucide="radar" class="w-5 h-5 mr-2 animate-spin"></i>
         <span>ESCANEO DE ABOGADOS CERCANOS...</span>
       </div>
@@ -251,7 +251,7 @@
 
   <!-- ASSIGNED LAWYER CONFIRMATION MODAL CARD (FLOTANTE DESDE ABAJO) -->
   <div id="lawyer-match-modal" class="hidden fixed inset-x-4 bottom-4 max-w-lg mx-auto z-30 pointer-events-auto transition-all duration-500 transform translate-y-full">
-    <div class="bg-black/95 backdrop-blur-2xl border border-uber-border rounded-3xl p-5 shadow-2xl text-white space-y-4">
+    <div class="bg-black/95 backdrop-blur-2xl border border-uber-border rounded-3xl p-4 sm:p-5 shadow-2xl text-white space-y-4 max-h-[85vh] overflow-y-auto">
 
       <!-- MATCH HEADER -->
       <div class="flex items-center justify-between border-b border-uber-border pb-3">
@@ -260,89 +260,124 @@
             <i data-lucide="check-circle" class="w-5 h-5"></i>
           </span>
           <div>
-            <h3 class="text-sm font-bold text-white">¡Abogado Encontrado!</h3>
+            <h3 class="text-sm font-bold text-white">Opción Principal Seleccionada</h3>
             <p class="text-[11px] text-uber-gray flex items-center gap-1">
               <i data-lucide="lock" class="w-3 h-3 text-emerald-400"></i>
               Atención 100% Privada y Cifrada P2P
             </p>
           </div>
         </div>
-        <button id="btn-close-match" class="p-1.5 rounded-full bg-zinc-800 text-zinc-400 hover:text-white transition">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+
+        <div class="flex items-center space-x-2">
+          <!-- NUEVA BÚSQUEDA BUTTON -->
+          <button id="btn-new-search" class="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-uber-green border border-zinc-700 transition active:scale-95">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            <span>Nueva Búsqueda</span>
+          </button>
+          <button id="btn-close-match" class="p-1.5 rounded-full bg-zinc-800 text-zinc-400 hover:text-white transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
       </div>
 
-      <!-- LAWYER DETAILS CARD & PROFILE BUTTON -->
-      <div class="flex items-center space-x-4">
-        <button id="btn-trigger-lawyer-profile-avatar" class="relative group cursor-pointer focus:outline-none">
-          <img id="match-lawyer-avatar" class="w-16 h-16 rounded-2xl object-cover border-2 border-uber-green shadow-lg group-hover:opacity-80 transition" src="" alt="Abogado">
-          <span class="absolute -bottom-1 -right-1 bg-uber-green text-black text-[9px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow">
-            ★ <span id="match-lawyer-rating">4.9</span>
+      <!-- MAIN FEATURED LAWYER CARD -->
+      <div id="main-lawyer-card" class="bg-zinc-900/90 border border-uber-green/40 rounded-2xl p-3.5 space-y-3 relative shadow-lg">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-uber-green/20 text-uber-green border border-uber-green/30">
+            ★ Opción 1 (Recomendada)
           </span>
-        </button>
+          <!-- OMITIR BUTTON FOR MAIN LAWYER -->
+          <button id="btn-omit-main-lawyer" class="text-xs text-red-400 hover:text-red-300 font-semibold flex items-center gap-1 px-2 py-1 rounded-lg bg-red-950/40 border border-red-500/30 hover:bg-red-900/60 transition active:scale-95">
+            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+            <span>X Omitir</span>
+          </button>
+        </div>
 
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <h4 id="match-lawyer-name" class="text-base font-extrabold text-white truncate">Dr. Abogado</h4>
+        <!-- LAWYER DETAILS & PROFILE BUTTON -->
+        <div class="flex items-center space-x-3 sm:space-x-4">
+          <button id="btn-trigger-lawyer-profile-avatar" class="relative group cursor-pointer focus:outline-none shrink-0">
+            <img id="match-lawyer-avatar" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-uber-green shadow-lg group-hover:opacity-80 transition" src="" alt="Abogado">
+            <span class="absolute -bottom-1 -right-1 bg-uber-green text-black text-[9px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow">
+              ★ <span id="match-lawyer-rating">4.9</span>
+            </span>
+          </button>
 
-            <!-- MALETIN / BRIEFCASE FICHA TECNICA BUTTON -->
-            <button id="btn-open-briefcase" class="p-1.5 bg-zinc-900 hover:bg-zinc-800 text-uber-green rounded-xl border border-zinc-700 transition flex items-center gap-1 text-[10px] font-bold">
-              <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
-              <span>Ficha</span>
-            </button>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <h4 id="match-lawyer-name" class="text-sm sm:text-base font-extrabold text-white truncate">Dr. Abogado</h4>
+
+              <!-- MALETIN / BRIEFCASE FICHA TECNICA BUTTON -->
+              <button id="btn-open-briefcase" class="p-1.5 bg-zinc-800 hover:bg-zinc-700 text-uber-green rounded-xl border border-zinc-700 transition flex items-center gap-1 text-[10px] font-bold shrink-0">
+                <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
+                <span>Ficha</span>
+              </button>
+            </div>
+
+            <p id="match-lawyer-spec" class="text-xs text-uber-green font-semibold">Especialista Penal</p>
+            <div class="mt-1 flex items-center space-x-3 text-[11px] text-zinc-400">
+              <span class="flex items-center gap-1">
+                <i data-lucide="file-badge" class="w-3 h-3 text-zinc-500"></i>
+                <span id="match-lawyer-tp">TP #123456</span>
+              </span>
+              <span class="flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3 h-3 text-red-400"></i>
+                <span id="match-lawyer-neighborhood">Granada</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESPONSE TIME & METRICS GRID -->
+        <div class="bg-black/60 p-2.5 rounded-xl border border-zinc-800 space-y-1.5">
+          <div class="flex items-center justify-between text-xs text-zinc-300 border-b border-zinc-800/80 pb-1.5">
+            <span class="flex items-center gap-1 text-uber-green font-medium">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+              Tiempo de Respuesta:
+            </span>
+            <span id="match-lawyer-response-times" class="font-bold text-white">Estimado 2 min • Máx 5 min</span>
           </div>
 
-          <p id="match-lawyer-spec" class="text-xs text-uber-green font-semibold">Especialista Penal</p>
-          <div class="mt-1 flex items-center space-x-3 text-[11px] text-zinc-400">
-            <span class="flex items-center gap-1">
-              <i data-lucide="file-badge" class="w-3 h-3 text-zinc-500"></i>
-              <span id="match-lawyer-tp">TP #123456</span>
-            </span>
-            <span class="flex items-center gap-1">
-              <i data-lucide="map-pin" class="w-3 h-3 text-red-400"></i>
-              <span id="match-lawyer-neighborhood">Granada</span>
-            </span>
+          <div class="grid grid-cols-3 gap-2 text-center pt-0.5">
+            <div>
+              <div class="text-[10px] text-zinc-400 uppercase tracking-wider font-medium">Distancia</div>
+              <div id="match-lawyer-distance" class="text-xs font-bold text-white mt-0.5">1.2 km</div>
+            </div>
+            <div class="border-x border-zinc-800">
+              <div class="text-[10px] text-zinc-400 uppercase tracking-wider font-medium">Llegada est.</div>
+              <div id="match-lawyer-time" class="text-xs font-bold text-uber-green mt-0.5">3 min</div>
+            </div>
+            <div>
+              <div class="text-[10px] text-zinc-400 uppercase tracking-wider font-medium">Consulta Express</div>
+              <div id="match-lawyer-price" class="text-xs font-bold text-white mt-0.5">$95.000</div>
+            </div>
           </div>
+        </div>
+
+        <!-- ACTION BUTTONS: VIDEO CALL OR PHYSICAL DISPATCH -->
+        <div class="space-y-2 pt-1">
+          <button id="btn-start-videocall-checkout" class="w-full py-2.5 px-4 bg-uber-green hover:bg-emerald-600 text-black font-extrabold text-xs sm:text-sm rounded-xl transition shadow-xl flex items-center justify-center space-x-2 active:scale-98">
+            <i data-lucide="video" class="w-4 h-4"></i>
+            <span>VIDEOLLAMADA CIFRADA EN VIVO ($<span id="btn-video-price">95.000</span>)</span>
+          </button>
+
+          <button id="btn-open-dispatch-modal" class="w-full py-2 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs rounded-xl border border-zinc-700 transition flex items-center justify-center space-x-2 active:scale-98">
+            <i data-lucide="navigation" class="w-3.5 h-3.5 text-red-400"></i>
+            <span>Solicitar Desplazamiento Presencial ($<span id="btn-dispatch-price">180.000</span>)</span>
+          </button>
         </div>
       </div>
 
-      <!-- RESPONSE TIME & METRICS GRID -->
-      <div class="bg-zinc-900/90 p-3 rounded-2xl border border-zinc-800 space-y-2">
-        <div class="flex items-center justify-between text-xs text-zinc-300 border-b border-zinc-800/80 pb-2">
-          <span class="flex items-center gap-1 text-uber-green font-medium">
-            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-            Tiempo de Respuesta:
-          </span>
-          <span id="match-lawyer-response-times" class="font-bold text-white">Estimado 2 min • Máx 5 min</span>
+      <!-- SECONDARY LAWYER OPTIONS SECTION -->
+      <div id="secondary-lawyers-section" class="space-y-2 pt-1 border-t border-uber-border">
+        <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+          <span>Otras alternativas disponibles (Toca una para elegir):</span>
+          <span id="secondary-lawyers-count" class="text-uber-green">2 más</span>
+        </p>
+
+        <!-- CONTAINER FOR SECONDARY LAWYERS -->
+        <div id="secondary-lawyers-container" class="space-y-2">
+          <!-- Dinámicamente insertado desde JavaScript -->
         </div>
-
-        <div class="grid grid-cols-3 gap-2 text-center pt-1">
-          <div>
-            <div class="text-[10px] text-zinc-400 uppercase tracking-wider font-medium">Distancia</div>
-            <div id="match-lawyer-distance" class="text-xs font-bold text-white mt-0.5">1.2 km</div>
-          </div>
-          <div class="border-x border-zinc-800">
-            <div class="text-[10px] text-zinc-400 uppercase tracking-wider font-medium">Llegada est.</div>
-            <div id="match-lawyer-time" class="text-xs font-bold text-uber-green mt-0.5">3 min</div>
-          </div>
-          <div>
-            <div class="text-[10px] text-zinc-400 uppercase tracking-wider font-medium">Consulta Express</div>
-            <div id="match-lawyer-price" class="text-xs font-bold text-white mt-0.5">$95.000</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTION BUTTONS: VIDEO CALL OR PHYSICAL DISPATCH -->
-      <div class="space-y-2">
-        <button id="btn-start-videocall-checkout" class="w-full py-3 px-4 bg-uber-green hover:bg-emerald-600 text-black font-extrabold text-sm rounded-xl transition shadow-xl flex items-center justify-center space-x-2 active:scale-98">
-          <i data-lucide="video" class="w-4 h-4"></i>
-          <span>VIDEOLLAMADA CIFRADA EN VIVO ($<span id="btn-video-price">95.000</span>)</span>
-        </button>
-
-        <button id="btn-open-dispatch-modal" class="w-full py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-semibold text-xs rounded-xl border border-zinc-700 transition flex items-center justify-center space-x-2 active:scale-98">
-          <i data-lucide="navigation" class="w-3.5 h-3.5 text-red-400"></i>
-          <span>Solicitar Desplazamiento Presencial ($<span id="btn-dispatch-price">180.000</span>)</span>
-        </button>
       </div>
 
     </div>
