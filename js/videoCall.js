@@ -19,11 +19,9 @@ const VideoCall = {
     modalEl.classList.remove('hidden');
     titleEl.textContent = `Atendido por: ${lawyer.name} (${lawyer.specialty})`;
 
-    // Limpiar contenedor previo
     containerEl.innerHTML = '';
 
-    // Nombre único de sala cifrada
-    const roomName = `UberLawyer_Cali_${lawyer.id}_${Date.now().toString(36)}`;
+    const roomName = `FindMyLawyer_Cali_${lawyer.id}_${Date.now().toString(36)}`;
 
     const domain = "meet.jit.si";
     const options = {
@@ -32,7 +30,7 @@ const VideoCall = {
       height: '100%',
       parentNode: containerEl,
       userInfo: {
-        displayName: 'Cliente UberLawyer (Cali)'
+        displayName: 'Cliente Find My Lawyer (Cali)'
       },
       configOverwrite: {
         startWithAudioMuted: false,
@@ -54,7 +52,6 @@ const VideoCall = {
     try {
       this.apiInstance = new JitsiMeetExternalAPI(domain, options);
 
-      // Evento al colgar desde la interfaz de Jitsi
       this.apiInstance.addEventListener('readyToClose', () => {
         this.endCall(onEndCallback);
       });
@@ -67,7 +64,6 @@ const VideoCall = {
       `;
     }
 
-    // Iniciar cronómetro de llamada
     this.callSeconds = 0;
     if (timerEl) timerEl.textContent = '00:00';
 

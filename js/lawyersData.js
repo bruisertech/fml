@@ -1,6 +1,6 @@
 /**
  * Base de datos local de abogados activos en Cali, Colombia (Mock Data Amplio)
- * Incluye cálculo de fórmula Haversine, tiempos de respuesta (estimado y máximo) y desplazamientos.
+ * Incluye cálculo de fórmula Haversine, tiempos de respuesta (estimado y máximo), ficha técnica extendida y desplazamientos.
  */
 
 const LAWYERS_DATA = [
@@ -21,6 +21,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=250",
     phone: "+57 315 489 2011",
     status: "Disponible ahora",
+    university: "Universidad del Valle",
+    experienceYears: 12,
+    languages: ["Español", "Inglés"],
+    casesWon: "320+ casos resueltos",
+    bio: "Especialista en Derecho Penal Corporativo, Hábeas Corpus y atención inmediata en capturas e imputaciones de la Fiscalía.",
     description: "Especialista en Derecho Penal Corporativo y capturas en flagrancia. 12 años de experiencia."
   },
   {
@@ -40,6 +45,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250",
     phone: "+57 310 921 4455",
     status: "Disponible ahora",
+    university: "Universidad Javeriana Cali",
+    experienceYears: 9,
+    languages: ["Español"],
+    casesWon: "210+ fotomultas e impugnaciones",
+    bio: "Ex-asesor jurídico de la Secretaría de Tránsito de Cali. Especialista en conciliación rápida en accidentes viales.",
     description: "Ex-asesor de la Secretaría de Tránsito de Cali. Conciliaciones inmediatas y fotomultas."
   },
   {
@@ -59,6 +69,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250",
     phone: "+57 318 654 1122",
     status: "Disponible ahora",
+    university: "Universidad Icesi",
+    experienceYears: 14,
+    languages: ["Español", "Inglés", "Francés"],
+    casesWon: "450+ restitución de bienes y contratos",
+    bio: "Magíster en Derecho Civil y Contratos Comerciales. Asesor de empresas y particulares en la región Pacífica.",
     description: "Especialista en restitución de inmuebles, embargo de bienes y contratos comerciales."
   },
   {
@@ -78,6 +93,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=250",
     phone: "+57 300 782 9900",
     status: "Disponible ahora",
+    university: "Universidad Libre de Cali",
+    experienceYears: 16,
+    languages: ["Español", "Inglés"],
+    casesWon: "180+ audiencias penales de alta complejidad",
+    bio: "Magíster en Ciencias Penales y Criminología. Defensa técnica especializada 24/7 en investigaciones complejas.",
     description: "Magíster en Ciencias Penales y Criminología. Defensa técnica especializada 24/7."
   },
   {
@@ -97,6 +117,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250",
     phone: "+57 316 223 8811",
     status: "Disponible ahora",
+    university: "Universidad Santiago de Cali",
+    experienceYears: 10,
+    languages: ["Español"],
+    casesWon: "290+ reclamaciones laborales",
+    bio: "Experto en licitaciones laborales, despidos inconstitucionales, indemnizaciones y seguridad social integral.",
     description: "Asesoría laboral tanto para trabajadores como para empleadores. Despidos inconstitucionales."
   },
   {
@@ -116,6 +141,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&q=80&w=250",
     phone: "+57 312 889 0044",
     status: "Disponible ahora",
+    university: "Universidad San Buenaventura Cali",
+    experienceYears: 8,
+    languages: ["Español", "Italiano"],
+    casesWon: "195+ divorcios y alimentos",
+    bio: "Especialista en conciliación de familia, divorcios express, regulación de visitas y custodias de menores.",
     description: "Especialista en divorcios expres, fijación de cuota alimentaria y custodias."
   },
   {
@@ -135,6 +165,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250",
     phone: "+57 317 554 3322",
     status: "Disponible ahora",
+    university: "Universidad del Rosario",
+    experienceYears: 11,
+    languages: ["Español", "Inglés"],
+    casesWon: "230+ registros de marcas y sociedades",
+    bio: "Asesor corporativo en derecho mercantil, constitución de sociedades SAS, marcas y litigios comerciales.",
     description: "Derecho corporativo, propiedad intelectual, marcas y sociedades comerciales."
   },
   {
@@ -154,6 +189,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=250",
     phone: "+57 301 445 7788",
     status: "Disponible ahora",
+    university: "Universidad Externado de Colombia",
+    experienceYears: 7,
+    languages: ["Español"],
+    casesWon: "140+ tutelas y demandas al Estado",
+    bio: "Especialista en contratación estatal, acciones de tutela urgentes y revocatorias directas de actos administrativos.",
     description: "Acciones de Tutela, Derechos de Petición y demandas contra entidades del Estado."
   },
   {
@@ -173,6 +213,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=250",
     phone: "+57 311 300 1212",
     status: "Disponible ahora",
+    university: "Universidad Nacional de Colombia",
+    experienceYears: 18,
+    languages: ["Español", "Alemán"],
+    casesWon: "500+ juicios orales dictaminados",
+    bio: "Penalista Senior con trayectoria en tribunales superiores. Litigio en audiencias de control de garantías.",
     description: "Penalista Senior. Litigio en audiencias de control de garantías e imputaciones."
   },
   {
@@ -192,6 +237,11 @@ const LAWYERS_DATA = [
     avatar: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&q=80&w=250",
     phone: "+57 320 667 8989",
     status: "Disponible ahora",
+    university: "Universidad Cooperativa de Colombia",
+    experienceYears: 9,
+    languages: ["Español"],
+    casesWon: "260+ suspensiones de licencias revocadas",
+    bio: "Defensa técnica en pruebas de alcoholemia, accidentes graves con lesionados e impugnaciones de comparendos.",
     description: "Experticia en licencias suspendidas, alcoholemia e impugnación de comparendos."
   }
 ];
@@ -208,7 +258,7 @@ function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c; // Distancia en km
+  const distance = R * c;
   return parseFloat(distance.toFixed(1));
 }
 
