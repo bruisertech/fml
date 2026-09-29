@@ -11,7 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
     assignedLawyer: null,
     currentLawyers: [],
     omittedLawyerIds: new Set(),
-    pendingPaymentType: null // 'videocall' o 'dispatch'
+    pendingPaymentType: null, // 'videocall' o 'dispatch'
+    userRole: 'Víctima', // 'Víctima' o 'Acusado'
+    inputMode: 'text', // 'text' o 'audio'
+    activeOrders: []
   };
 
   // Inicialización de Lucide Icons
@@ -464,6 +467,21 @@ document.addEventListener('DOMContentLoaded', () => {
       btnTriggerApplepayBiometric.disabled = false;
       applepayModalStatusMsg.classList.remove('hidden');
 
+      // Register new order
+      const newOrder = {
+        id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+        originalLawyer: state.assignedLawyer,
+        currentLawyer: state.assignedLawyer,
+        serviceType: state.pendingPaymentType === 'videocall' ? 'Videollamada Express' : 'Desplazamiento Presencial',
+        amountCOP: state.pendingPaymentType === 'videocall' ? state.assignedLawyer.priceCOP : state.assignedLawyer.travelPriceCOP,
+        status: 'Reasignado por Rechazo', // Simular reasignación para demostrar la funcionalidad
+        isReassigned: true,
+        reassignedLawyer: getAvailableLawyers().find(l => l.id !== state.assignedLawyer.id) || state.currentLawyers[1]
+      };
+
+      state.activeOrders.unshift(newOrder);
+      updateOrdersBadge();
+
       setTimeout(() => {
         applePayModal.classList.add('hidden');
 
@@ -489,7 +507,210 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // 8. Modal Configuración Google Gemini API Key
+  // 3b. Role Selection (Víctima / Acusado) & Input Mode (Texto / Audio)
+  const btnRoleVictima = document.getElementById('btn-role-victima');
+  const btnRoleAcusado = document.getElementById('btn-role-acusado');
+
+  if (btnRoleVictima && btnRoleAcusado) {
+    btnRoleVictima.addEventListener('click', () => {
+      state.userRole = 'Víctima';
+      btnRoleVictima.className = "py-2 px-3 rounded-xl bg-uber-green text-black font-extrabold text-xs border border-uber-green flex items-center justify-center space-x-1.5 transition active:scale-95 shadow";
+      btnRoleAcusado.className = "py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold text-xs border border-zinc-700 flex items-center justify-center space-x-1.5 transition active:scale-95";
+    });
+
+    btnRoleAcusado.addEventListener('click', () => {
+      state.userRole = 'Acusado';
+      btnRoleAcusado.className = "py-2 px-3 rounded-xl bg-uber-green text-black font-extrabold text-xs border border-uber-green flex items-center justify-center space-x-1.5 transition active:scale-95 shadow";
+      btnRoleVictima.className = "py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-bold text-xs border border-zinc-700 flex items-center justify-center space-x-1.5 transition active:scale-95";
+    });
+  }
+
+  const btnModeText = document.getElementById('btn-mode-text');
+  const btnModeAudio = document.getElementById('btn-mode-audio');
+  const textInputContainer = document.getElementById('text-input-container');
+  const audioInputContainer = document.getElementById('audio-input-container');
+
+  if (btnModeText && btnModeAudio) {
+    btnModeText.addEventListener('click', () => {
+      state.inputMode = 'text';
+      btnModeText.className = "px-2.5 py-1 rounded-lg bg-uber-green text-black font-bold transition";
+      btnModeAudio.className = "px-2.5 py-1 rounded-lg text-zinc-400 font-medium hover:text-white transition";
+      textInputContainer.classList.remove('hidden');
+      audioInputContainer.classList.add('hidden');
+    });
+
+    btnModeAudio.addEventListener('click', () => {
+      state.inputMode = 'audio';
+      btnModeAudio.className = "px-2.5 py-1 rounded-lg bg-uber-green text-black font-bold transition";
+      btnModeText.className = "px-2.5 py-1 rounded-lg text-zinc-400 font-medium hover:text-white transition";
+      textInputContainer.classList.add('hidden');
+      audioInputContainer.classList.remove('hidden');
+    });
+  }
+
+  const btnAnalyzeTextAi = document.getElementById('btn-analyze-text-ai');
+  const userTextPrompt = document.getElementById('user-text-prompt');
+
+  if (btnAnalyzeTextAi) {
+    btnAnalyzeTextAi.addEventListener('click', async () => {
+      const promptText = userTextPrompt.value.trim();
+      if (!promptText) {
+        alert("Por favor escribe un breve resumen de tu caso.");
+        return;
+      }
+
+      aiFeedbackEl.classList.remove('hidden');
+      aiFeedbackText.textContent = `Analizando consulta como ${state.userRole} con IA de Google Gemini...`;
+
+      const analysis = await GoogleApiTest.analyzeCaseAudioOrText({
+        textPrompt: `[Rol: ${state.userRole}] ${promptText}`
+      });
+
+      if (analysis.success) {
+        aiFeedbackText.innerHTML = `
+          <strong>IA Gemini (${analysis.isSimulation ? 'Modo Test' : 'Real'}):</strong>
+          Rol: <span class="font-bold text-white">${state.userRole}</span> • Especialidad: <span class="underline font-bold">${analysis.specialty}</span>.<br>
+          ${analysis.summary}
+        `;
+        state.selectedSpecialty = analysis.specialty;
+        updateLawyersList();
+      } else {
+        aiFeedbackText.textContent = `Error en IA: ${analysis.error}. Se mantiene la categoría actual.`;
+      }
+    });
+  }
+
+  // 7b. Panel de Mis Órdenes
+  const btnOpenOrdersModal = document.getElementById('btn-open-orders-modal');
+  const btnCloseOrdersModal = document.getElementById('btn-close-orders-modal');
+  const ordersModal = document.getElementById('orders-modal');
+  const ordersModalContent = document.getElementById('orders-modal-content');
+  const ordersBadge = document.getElementById('orders-badge');
+
+  function updateOrdersBadge() {
+    if (state.activeOrders.length > 0) {
+      ordersBadge.textContent = state.activeOrders.length;
+      ordersBadge.classList.remove('hidden');
+    } else {
+      ordersBadge.classList.add('hidden');
+    }
+  }
+
+  function renderOrdersList() {
+    ordersModalContent.innerHTML = '';
+
+    if (state.activeOrders.length === 0) {
+      ordersModalContent.innerHTML = `
+        <div class="p-6 text-center text-zinc-400 space-y-2 bg-zinc-900/60 rounded-2xl border border-zinc-800">
+          <i data-lucide="shopping-bag" class="w-8 h-8 text-zinc-600 mx-auto"></i>
+          <p class="text-xs">No tienes órdenes o servicios activos en este momento.</p>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+      return;
+    }
+
+    state.activeOrders.forEach((order, idx) => {
+      const card = document.createElement('div');
+      card.className = "bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3";
+
+      if (order.isReassigned && order.status === 'Reasignado por Rechazo') {
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+            <span class="text-xs font-mono text-zinc-400">${order.id} • ${order.serviceType}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+              Reasignado
+            </span>
+          </div>
+
+          <div class="p-2.5 bg-amber-950/30 border border-amber-500/30 rounded-xl text-xs space-y-1 text-amber-200">
+            <div class="font-bold flex items-center gap-1 text-amber-400">
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+              <span>El abogado original (${order.originalLawyer.name}) no pudo aceptar la solicitud.</span>
+            </div>
+            <p>Se ha asignado automáticamente al especialista más calificado en Cali:</p>
+          </div>
+
+          <div class="flex items-center space-x-3 p-2 bg-black/60 rounded-xl border border-zinc-800">
+            <img class="w-12 h-12 rounded-xl object-cover border border-uber-green" src="${order.reassignedLawyer.avatar}" alt="Nuevo Abogado">
+            <div class="flex-1 min-w-0">
+              <h5 class="text-xs font-bold text-white truncate">${order.reassignedLawyer.name}</h5>
+              <p class="text-[11px] text-uber-green font-semibold">${order.reassignedLawyer.specialty}</p>
+              <div class="text-[10px] text-zinc-400">★ ${order.reassignedLawyer.rating} • ${order.reassignedLawyer.tp}</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button class="btn-cancel-order py-2 bg-red-950/60 hover:bg-red-900/80 text-red-300 font-bold text-xs rounded-xl border border-red-500/40 transition active:scale-95" data-index="${idx}">
+              Cancelar Servicio
+            </button>
+            <button class="btn-accept-order py-2 bg-uber-green hover:bg-emerald-600 text-black font-extrabold text-xs rounded-xl transition active:scale-95" data-index="${idx}">
+              Aceptar Cambio
+            </button>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+            <span class="text-xs font-mono text-zinc-400">${order.id} • ${order.serviceType}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-uber-green/20 text-uber-green border border-uber-green/30">
+              ${order.status}
+            </span>
+          </div>
+
+          <div class="flex items-center space-x-3 p-2 bg-black/60 rounded-xl border border-zinc-800">
+            <img class="w-12 h-12 rounded-xl object-cover border border-uber-green" src="${order.currentLawyer.avatar}" alt="Abogado">
+            <div class="flex-1 min-w-0">
+              <h5 class="text-xs font-bold text-white truncate">${order.currentLawyer.name}</h5>
+              <p class="text-[11px] text-uber-green font-semibold">${order.currentLawyer.specialty}</p>
+              <div class="text-[10px] text-zinc-400">$${order.amountCOP.toLocaleString('es-CO')} COP</div>
+            </div>
+          </div>
+        `;
+      }
+
+      ordersModalContent.appendChild(card);
+    });
+
+    // Add action handlers
+    ordersModalContent.querySelectorAll('.btn-accept-order').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-index'));
+        const order = state.activeOrders[idx];
+        order.currentLawyer = order.reassignedLawyer;
+        order.status = 'Confirmado y En Curso';
+        order.isReassigned = false;
+        renderOrdersList();
+      });
+    });
+
+    ordersModalContent.querySelectorAll('.btn-cancel-order').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-index'));
+        state.activeOrders.splice(idx, 1);
+        updateOrdersBadge();
+        renderOrdersList();
+        alert("El servicio ha sido cancelado con éxito y el reembolso fue procesado.");
+      });
+    });
+
+    if (window.lucide) lucide.createIcons();
+  }
+
+  if (btnOpenOrdersModal) {
+    btnOpenOrdersModal.addEventListener('click', () => {
+      renderOrdersList();
+      ordersModal.classList.remove('hidden');
+    });
+  }
+
+  if (btnCloseOrdersModal) {
+    btnCloseOrdersModal.addEventListener('click', () => {
+      ordersModal.classList.add('hidden');
+    });
+  }
+
+  // 8. Modal Configuración Google Gemini API Key y Verificación Startup
   const btnOpenApiModal = document.getElementById('btn-open-api-modal');
   const btnCloseApiModal = document.getElementById('btn-close-api-modal');
   const apiModal = document.getElementById('api-modal');
@@ -510,6 +731,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   updateApiBadgeStatus();
+
+  // Startup prompt for Gemini API key if missing
+  setTimeout(() => {
+    if (!GoogleApiTest.getApiKey()) {
+      inputApiKey.value = "";
+      selectGeminiModel.value = GoogleApiTest.getModel();
+      apiTestResult.classList.remove('hidden');
+      apiTestResult.className = "text-xs p-2.5 rounded-xl bg-amber-950/80 border border-amber-500/50 text-amber-300";
+      apiTestResult.textContent = "¡Bienvenido a Abogao! Ingrese su API Key de Google Gemini para habilitar el análisis de IA obligatorio. O guarde sin clave para utilizar el Modo Test/Simulación.";
+      apiModal.classList.remove('hidden');
+    }
+  }, 600);
 
   btnOpenApiModal.addEventListener('click', () => {
     inputApiKey.value = GoogleApiTest.getApiKey();
