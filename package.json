@@ -1,0 +1,25 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "![uberlawyerBETA](https://img.shields.io/badge/Status-Beta%20Ready-05a357?style=for-the-badge) ![Location](https://img.shields.io/badge/Location-Cali%2C%20Colombia-3b82f6?style=for-the-badge) ![Stack](https://img.shields.io/badge/Stack-HTML5%20%7C%20TailwindCSS%20%7C%20Leaflet%20%7C%20Gemini%20AI-black?style=for-the-badge)",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bruisertech/fml.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bruisertech/fml/issues"
+  },
+  "homepage": "https://github.com/bruisertech/fml#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}
