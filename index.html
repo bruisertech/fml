@@ -3,12 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Abogao – Plataforma Legal On-Demand en Cali</title>
-
-  <!-- PWA Metadata -->
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icons/icon-180.png">
-  <meta name="theme-color" content="#000000">
+  <title>Abogao – Plataforma On-Demand de Abogados en Cali</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -62,25 +57,14 @@
     <div class="flex items-center space-x-2 bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-full border border-slate-800 shadow-2xl">
       <i data-lucide="scale" class="w-5 h-5 text-emerald-400"></i>
       <span class="font-extrabold tracking-tight text-white text-lg">Abo<span class="text-emerald-400">gao</span></span>
-      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 ml-1">v6.1 Cali</span>
+      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 ml-2">Cali, CO</span>
     </div>
 
     <div class="flex items-center space-x-2">
-      <!-- BOTÓN GUÍA DE VOZ -->
-      <button id="btn-toggle-voice-guide" class="p-2.5 bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 text-white text-xs rounded-full border border-slate-800 transition shadow-xl active:scale-95" title="Escuchar o Guía de Voz">
-        <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
-      </button>
-
-      <!-- BOTÓN BÚSQUEDA Y ÁREAS -->
-      <button id="btn-open-catalog-modal" class="flex items-center space-x-1.5 bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 text-white text-xs px-3 py-2 rounded-full border border-slate-800 transition shadow-xl active:scale-95">
-        <i data-lucide="grid" class="w-4 h-4 text-emerald-400"></i>
-        <span class="font-medium hidden sm:inline">24 Áreas</span>
-      </button>
-
       <!-- RUTAS JURÍDICAS BUTTON -->
       <button id="btn-open-routes-modal" class="flex items-center space-x-1.5 bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 text-white text-xs px-3 py-2 rounded-full border border-slate-800 transition shadow-xl active:scale-95">
         <i data-lucide="map" class="w-4 h-4 text-emerald-400"></i>
-        <span class="font-medium hidden md:inline">Rutas</span>
+        <span class="font-medium hidden md:inline">Rutas Jurídicas</span>
       </button>
 
       <!-- CONSULTORIO BUTTON -->
@@ -93,7 +77,7 @@
       <button id="btn-open-orders-modal" class="flex items-center space-x-1.5 bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 text-white text-xs px-3 py-2 rounded-full border border-slate-800 transition shadow-xl active:scale-95">
         <i data-lucide="shopping-bag" class="w-4 h-4 text-emerald-400"></i>
         <span class="font-medium hidden sm:inline">Órdenes</span>
-        <span id="orders-badge" class="hidden px-1.5 py-0.2 rounded-full bg-red-600 text-white text-[10px] font-bold">0</span>
+        <span id="orders-badge" class="hidden px-1.5 py-0.2 rounded-full bg-red-600 text-white text-[10px] font-bold">1</span>
       </button>
 
       <!-- API CONFIG BUTTON -->
@@ -128,7 +112,7 @@
             </div>
             <div>
               <div class="text-xs font-extrabold text-white">🚨 Urgencia Inmediata</div>
-              <div class="text-[10px] text-red-200">Persona detenida, riesgo, hoy</div>
+              <div class="text-[10px] text-red-200">Te está pasando ahora mismo</div>
             </div>
           </button>
 
@@ -138,7 +122,7 @@
             </div>
             <div>
               <div class="text-xs font-extrabold text-white">📅 Consulta Preventiva</div>
-              <div class="text-[10px] text-slate-400">Trámites, contratos, cita</div>
+              <div class="text-[10px] text-slate-400">Revisión, trámites futuros</div>
             </div>
           </button>
         </div>
@@ -173,74 +157,60 @@
         </div>
       </div>
 
-      <!-- PASO 3: ESPECIALIDADES REALES DE EMERGENCIA / ÁREAS DEL CATÁLOGO v6.1 -->
+      <!-- PASO 3: ESPECIALIDADES REALES DE EMERGENCIA (5 ÁREAS REALES) -->
       <div id="triage-step-3" class="hidden space-y-3">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Selecciona el Área Legal (24 disponibles):</h3>
-          <button id="btn-quick-catalog" class="text-[11px] text-emerald-400 hover:underline flex items-center gap-1">
-            <i data-lucide="search" class="w-3 h-3"></i> Buscar proceso
-          </button>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1" id="specialties-grid-container">
-          <!-- Renderizado dinámicamente desde JS con las 24 áreas de catalog.js -->
+        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Selecciona la Especialidad Requerida:</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="specialties-grid-container">
+          <!-- Renderizado dinámicamente desde JS -->
         </div>
       </div>
 
-      <!-- PASO 4: CUESTIONARIO DE ORIENTACIÓN & ROL (v6.1) -->
-      <div id="triage-step-4" class="hidden space-y-3">
-        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Cuestionario de Orientación Legal:</h3>
-
-        <div class="space-y-2.5 text-xs">
-          <div>
-            <label class="block text-slate-400 mb-1">¿Para quién es la ayuda?</label>
-            <div class="grid grid-cols-3 gap-1.5" id="q-para-container"></div>
-          </div>
-
-          <div>
-            <label class="block text-slate-400 mb-1">¿Cuál es tu rol o posición?</label>
-            <div class="grid grid-cols-3 gap-1.5" id="q-rol-container"></div>
-          </div>
-
-          <div>
-            <label class="block text-slate-400 mb-1">¿Qué necesitas principalmente?</label>
-            <div class="grid grid-cols-2 gap-1.5" id="q-necesita-container"></div>
-          </div>
+      <!-- PASO 4: ROL DEL USUARIO (VÍCTIMA VS ACUSADO) -->
+      <div id="triage-step-4" class="hidden space-y-2.5">
+        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">¿Cuál es tu rol legal en la situación?</h3>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button id="btn-role-victima" class="py-2.5 px-3 rounded-2xl bg-emerald-500 text-black font-extrabold text-xs border border-emerald-400 flex items-center justify-center space-x-2 transition active:scale-95 shadow">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+            <span>Soy Víctima / Afectado</span>
+          </button>
+          <button id="btn-role-acusado" class="py-2.5 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 flex items-center justify-center space-x-2 transition active:scale-95">
+            <i data-lucide="scale" class="w-4 h-4"></i>
+            <span>Soy Acusado / Señalado</span>
+          </button>
         </div>
-
-        <button id="btn-finish-questionnaire" class="w-full py-2 px-3 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs rounded-xl transition shadow">
-          Continuar a Detalle del Caso
-        </button>
       </div>
 
       <!-- PASO 5: DESCRIPCIÓN DE HECHOS (TEXTO O VOZ + Gemini IA) -->
       <div id="triage-step-5" class="hidden space-y-3 pt-1">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">Descripción del Caso (Máx 300 caracteres):</span>
+          <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">Descripción del Caso:</span>
           <div class="flex items-center space-x-1 bg-slate-800 p-1 rounded-xl border border-slate-700 text-[11px]">
             <button id="btn-mode-text" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-black font-bold transition">✍️ Texto</button>
-            <button id="btn-mode-audio" class="px-2.5 py-1 rounded-lg text-slate-400 font-medium hover:text-white transition">🎤 Voz / Dictado</button>
+            <button id="btn-mode-audio" class="px-2.5 py-1 rounded-lg text-slate-400 font-medium hover:text-white transition">🎤 Audio</button>
           </div>
         </div>
 
         <!-- TEXT CONTAINER -->
-        <div id="text-input-container" class="space-y-1">
-          <textarea id="user-text-prompt" rows="2" maxlength="300" placeholder="Ej: Capturaron a mi hermano en El Peñón, o me embargaron la cuenta sueldo..." class="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none resize-none"></textarea>
-          <div class="flex items-center justify-between text-[10px] text-slate-400">
-            <span id="search-matches-indicator" class="text-emerald-400 font-medium"></span>
-            <span><span id="char-count">0</span>/300</span>
-          </div>
+        <div id="text-input-container" class="space-y-2">
+          <textarea id="user-text-prompt" rows="2" placeholder="Cuéntanos brevemente qué pasó o en qué CAI / estación te encuentras..." class="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none resize-none"></textarea>
         </div>
 
         <!-- AUDIO CONTAINER -->
         <div id="audio-input-container" class="hidden space-y-2">
           <div class="flex items-center justify-between text-xs text-slate-400">
-            <span>Dictado por voz directo a texto:</span>
-            <span id="recording-timer" class="font-mono text-emerald-400 hidden">Escuchando...</span>
+            <span>Nota de voz para Gemini:</span>
+            <span id="recording-timer" class="font-mono text-emerald-400 hidden">00:00</span>
           </div>
           <div class="flex items-center space-x-2">
             <button id="btn-record-audio" class="flex-1 flex items-center justify-center space-x-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 text-white text-xs rounded-xl border border-slate-700 transition active:scale-95">
               <i data-lucide="mic" id="record-icon" class="w-3.5 h-3.5 text-red-500"></i>
-              <span id="record-text">Hablar para dictar relato</span>
+              <span id="record-text">Grabar nota de voz (1 min max)</span>
+            </button>
+            <button id="btn-play-audio" class="hidden p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-slate-700 transition">
+              <i data-lucide="play" class="w-4 h-4 text-emerald-400"></i>
+            </button>
+            <button id="btn-clear-audio" class="hidden p-2 bg-slate-800 hover:bg-red-950 text-red-400 rounded-xl border border-slate-700 transition">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
@@ -248,17 +218,14 @@
         <!-- AI GEMINI BUTTON -->
         <button id="btn-analyze-text-ai" class="w-full py-2 px-3 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-xs rounded-xl border border-emerald-500/40 transition flex items-center justify-center space-x-1.5 active:scale-95">
           <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span>✨ Identificar Proceso Exacto con IA Gemini / Catálogo</span>
+          <span>✨ Resumir Caso con IA Gemini</span>
         </button>
 
         <!-- SHARED AI ANALYSIS FEEDBACK -->
-        <div id="ai-analysis-feedback" class="hidden p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-300 space-y-1.5">
-          <div class="flex items-center gap-1.5 font-bold text-emerald-400">
-            <i data-lucide="sparkles" class="w-4 h-4 shrink-0"></i>
-            <span>Resultado del Análisis:</span>
-          </div>
-          <div id="ai-analysis-text" class="leading-relaxed text-[11px] text-slate-200">
-            Analizando caso...
+        <div id="ai-analysis-feedback" class="hidden p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-300 flex items-start space-x-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+          <div id="ai-analysis-text" class="leading-relaxed">
+            Analizando caso con IA...
           </div>
         </div>
       </div>
@@ -273,21 +240,21 @@
     <div id="selected-spec-banner" class="hidden mb-2 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-xl p-2.5 text-xs flex items-center justify-between text-slate-300 shadow-xl">
       <div class="flex items-center space-x-2">
         <i data-lucide="filter" class="w-3.5 h-3.5 text-emerald-400"></i>
-        <span>Área: <strong id="selected-spec-name" class="text-white">Todas las áreas</strong></span>
+        <span>Especialidad: <strong id="selected-spec-name" class="text-white">Cualquiera</strong></span>
       </div>
-      <span id="lawyers-found-count" class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">8 Profesionales activos</span>
+      <span id="lawyers-found-count" class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">8 Abogados activos</span>
     </div>
 
     <!-- MAIN UBER DRIVER STYLE ACTION BUTTON -->
     <button id="btn-main-search" class="w-full relative overflow-hidden py-4 px-6 bg-white hover:bg-slate-200 text-black font-extrabold text-base tracking-wide rounded-2xl shadow-2xl transition duration-200 transform active:scale-98 flex items-center justify-center space-x-3 border border-white">
       <div class="relative z-10 flex items-center space-x-2">
         <i data-lucide="search" class="w-5 h-5 text-black"></i>
-        <span id="btn-search-text">BUSCAR ESPECIALISTA EN CALI</span>
+        <span id="btn-search-text">BUSCAR ABOGADO DISPONIBLE EN CALI</span>
       </div>
       <!-- RADAR SCAN ANIMATION OVERLAY -->
       <div id="btn-radar-wave" class="hidden absolute inset-0 z-30 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-bold text-sm tracking-wider w-full h-full">
         <i data-lucide="radar" class="w-5 h-5 mr-2 animate-spin"></i>
-        <span>ESCANEO DE PROFESIONALES CERCANOS...</span>
+        <span>ESCANEO DE ABOGADOS CERCANOS...</span>
       </div>
     </button>
   </footer>
@@ -303,10 +270,10 @@
             <i data-lucide="check-circle" class="w-5 h-5"></i>
           </span>
           <div>
-            <h3 class="text-sm font-bold text-white">Especialista Asignado</h3>
+            <h3 class="text-sm font-bold text-white">Opción Principal Seleccionada</h3>
             <p class="text-[11px] text-slate-400 flex items-center gap-1">
               <i data-lucide="lock" class="w-3 h-3 text-emerald-400"></i>
-              Atención 100% Privada y Verificada
+              Atención 100% Privada y Cifrada P2P
             </p>
           </div>
         </div>
@@ -325,8 +292,8 @@
       <!-- MAIN FEATURED LAWYER CARD WITH PUBLIC T.P. VERIFIED BADGE -->
       <div id="main-lawyer-card" class="bg-slate-950/80 border border-emerald-500/40 rounded-2xl p-3.5 space-y-3 relative shadow-lg">
         <div class="flex items-center justify-between">
-          <span id="specialist-badge-target" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-            🎯 Especialista Directo
+          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            ★ Opción 1 (Recomendada)
           </span>
           <button id="btn-omit-main-lawyer" class="text-xs text-red-400 hover:text-red-300 font-semibold flex items-center gap-1 px-2 py-1 rounded-lg bg-red-950/40 border border-red-500/30 hover:bg-red-900/60 transition active:scale-95">
             <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
@@ -337,26 +304,27 @@
         <!-- LAWYER DETAILS & VERIFIED T.P. BADGE -->
         <div class="flex items-center space-x-3 sm:space-x-4">
           <button id="btn-trigger-lawyer-profile-avatar" class="relative group cursor-pointer focus:outline-none shrink-0">
-            <div id="match-lawyer-avatar-placeholder" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-slate-800 border-2 border-emerald-500 shadow-lg flex items-center justify-center text-xl font-bold text-white">
-              LR
-            </div>
+            <img id="match-lawyer-avatar" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-emerald-500 shadow-lg group-hover:opacity-80 transition" src="" alt="Abogado">
+            <span class="absolute -bottom-1 -right-1 bg-emerald-500 text-black text-[9px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow">
+              ★ <span id="match-lawyer-rating">4.9</span>
+            </span>
           </button>
 
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between">
-              <h4 id="match-lawyer-name" class="text-sm sm:text-base font-extrabold text-white truncate">Dra. Laura Restrepo</h4>
+              <h4 id="match-lawyer-name" class="text-sm sm:text-base font-extrabold text-white truncate">Dr. Abogado</h4>
               <button id="btn-open-briefcase" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl border border-slate-700 transition flex items-center gap-1 text-[10px] font-bold shrink-0">
                 <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
-                <span>Dosier</span>
+                <span>Ficha</span>
               </button>
             </div>
 
-            <p id="match-lawyer-spec" class="text-xs text-emerald-400 font-semibold">Abogado Penalista (24 Horas)</p>
+            <p id="match-lawyer-spec" class="text-xs text-emerald-400 font-semibold">Especialista Penal</p>
 
             <!-- PROMINENT T.P. VERIFIED BADGE -->
             <div class="mt-1 p-1.5 bg-emerald-950/60 rounded-lg border border-emerald-500/30 text-[11px] text-emerald-300 flex items-center gap-1.5">
               <i data-lucide="badge-check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
-              <span id="match-lawyer-tp" class="font-bold truncate">T.P. DEMO-159137 • Verificada CSJ</span>
+              <span id="match-lawyer-tp" class="font-bold truncate">T.P. No. 284.912 del CSJ • Verificada</span>
             </div>
 
             <div class="mt-1 flex items-center space-x-2 text-[11px] text-slate-400">
@@ -372,9 +340,9 @@
           <div class="flex items-center justify-between text-xs text-slate-300 border-b border-slate-800 pb-1.5">
             <span class="flex items-center gap-1 text-emerald-400 font-medium">
               <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-              Disponibilidad:
+              Tiempo de Respuesta:
             </span>
-            <span id="match-lawyer-response-times" class="font-bold text-white">24 horas • Atiende en Granada</span>
+            <span id="match-lawyer-response-times" class="font-bold text-white">Estimado 2 min • Máx 5 min</span>
           </div>
 
           <div class="grid grid-cols-3 gap-2 text-center pt-0.5">
@@ -387,8 +355,8 @@
               <div id="match-lawyer-time" class="text-xs font-bold text-emerald-400 mt-0.5">3 min</div>
             </div>
             <div>
-              <div class="text-[10px] text-slate-400 uppercase font-medium">Consulta</div>
-              <div id="match-lawyer-price" class="text-xs font-bold text-white mt-0.5">$60.000</div>
+              <div class="text-[10px] text-slate-400 uppercase font-medium">Consulta Express</div>
+              <div id="match-lawyer-price" class="text-xs font-bold text-white mt-0.5">$95.000</div>
             </div>
           </div>
         </div>
@@ -397,12 +365,12 @@
         <div class="space-y-2 pt-1">
           <button id="btn-start-videocall-checkout" class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs sm:text-sm rounded-xl transition shadow-xl flex items-center justify-center space-x-2 active:scale-98">
             <i data-lucide="video" class="w-4 h-4"></i>
-            <span>📹 INICIAR CONSULTA POR LLAMADA/VIDEO ($<span id="btn-video-price">60.000</span>)</span>
+            <span>📹 INICIAR VIDEOLLAMADA INMEDIATA ($<span id="btn-video-price">95.000</span>)</span>
           </button>
 
           <button id="btn-open-dispatch-modal" class="w-full py-2 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center space-x-2 active:scale-98">
             <i data-lucide="navigation" class="w-3.5 h-3.5 text-red-400"></i>
-            <span>📍 SOLICITAR DESPLAZAMIENTO PRESENCIAL ($<span id="btn-dispatch-price">150.000</span>)</span>
+            <span>📍 SOLICITAR ABOGADO AL LUGAR ($<span id="btn-dispatch-price">180.000</span>)</span>
           </button>
         </div>
       </div>
@@ -410,45 +378,10 @@
       <!-- SECONDARY LAWYER OPTIONS SECTION -->
       <div id="secondary-lawyers-section" class="space-y-2 pt-1 border-t border-slate-800">
         <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-          <span>Otras opciones verificadas disponibles:</span>
+          <span>Otras alternativas disponibles:</span>
           <span id="secondary-lawyers-count" class="text-emerald-400">2 más</span>
         </p>
         <div id="secondary-lawyers-container" class="space-y-2"></div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- MODAL CATÁLOGO Y BÚSQUEDA DE PROCESOS (24 ÁREAS Y 247 PROCESOS v6.1) -->
-  <div id="catalog-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 max-w-lg w-full shadow-2xl space-y-4 text-white max-h-[85vh] flex flex-col">
-
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3 shrink-0">
-        <div class="flex items-center space-x-2">
-          <i data-lucide="search" class="w-5 h-5 text-emerald-400"></i>
-          <h3 class="text-base font-bold">Buscador del Derecho Colombiano</h3>
-        </div>
-        <button id="btn-close-catalog-modal" class="text-slate-400 hover:text-white transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- BUSCADOR LIBRE DE PROCESOS -->
-      <div class="shrink-0 space-y-2">
-        <div class="relative">
-          <input id="input-catalog-search" type="text" placeholder="Escribe tu problema (ej: me embargaron, fotomulta, desalojo...)" class="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-3 pr-8 focus:border-emerald-500 focus:outline-none">
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3 top-3.5"></i>
-        </div>
-        <div class="flex items-center gap-2 text-[11px] text-slate-400">
-          <span class="font-bold text-slate-300">Filtros:</span>
-          <button id="btn-filter-ya" class="px-2 py-0.5 rounded-md bg-red-950/60 border border-red-500/40 text-red-300 hover:bg-red-900/80">🚨 44 Urgentes (YA)</button>
-          <button id="btn-filter-all" class="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700">Todos (247)</button>
-        </div>
-      </div>
-
-      <!-- CONTENEDOR DE RESULTADOS Y ÁREAS -->
-      <div id="catalog-modal-content" class="flex-1 overflow-y-auto space-y-3 pr-1">
-        <!-- Generado dinámicamente -->
       </div>
 
     </div>
@@ -461,7 +394,7 @@
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center space-x-2">
           <i data-lucide="map" class="w-5 h-5 text-emerald-400"></i>
-          <h3 class="text-base font-bold">Rutas Jurídicas y Guías Paso a Paso</h3>
+          <h3 class="text-base font-bold">Rutas Jurídicas y Protocolos Legales</h3>
         </div>
         <button id="btn-close-routes-modal" class="text-slate-400 hover:text-white transition">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -473,14 +406,14 @@
     </div>
   </div>
 
-  <!-- MODAL CONSULTORIO LEGAL -->
+  <!-- MODAL CONSULTORIO LEGAL (ACOMPAÑAMIENTO POR PERIODOS) -->
   <div id="consultorio-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 text-white max-h-[85vh] overflow-y-auto">
 
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center space-x-2">
           <i data-lucide="building-2" class="w-5 h-5 text-emerald-400"></i>
-          <h3 class="text-base font-bold">Consultorio Legal & Acompañamiento 15 Días</h3>
+          <h3 class="text-base font-bold">Consultorio & Paquetes de Acompañamiento</h3>
         </div>
         <button id="btn-close-consultorio-modal" class="text-slate-400 hover:text-white transition">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -488,7 +421,7 @@
       </div>
 
       <p class="text-xs text-slate-300 leading-relaxed">
-        Protección legal continua durante 15 días: comunicación directa por chat, revisión de documentos y 2 videollamadas con tu especialista asignado.
+        Protección legal continua con asesoría constante por chat, revisión de documentos y representación en Cali.
       </p>
 
       <div id="consultorio-packages-container" class="space-y-3"></div>
@@ -496,14 +429,14 @@
     </div>
   </div>
 
-  <!-- MODAL DOSIER Y FICHA TÉCNICA DEL PROFESIONAL (v6.1) -->
+  <!-- MODAL FICHA TÉCNICA Y PERFIL PROFESIONAL DEL ABOGADO -->
   <div id="lawyer-profile-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-white max-h-[85vh] overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-white">
 
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center space-x-2">
           <i data-lucide="briefcase" class="w-5 h-5 text-emerald-400"></i>
-          <h3 class="text-base font-bold">Dosier Profesional Objetivo</h3>
+          <h3 class="text-base font-bold">Ficha Técnica Profesional</h3>
         </div>
         <button id="btn-close-profile-modal" class="text-slate-400 hover:text-white transition">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -511,38 +444,28 @@
       </div>
 
       <div class="flex items-center space-x-4">
-        <div id="profile-modal-avatar" class="w-16 h-16 rounded-2xl bg-slate-800 border-2 border-emerald-400 flex items-center justify-center text-xl font-bold text-white shrink-0">
-          LR
-        </div>
+        <img id="profile-modal-avatar" class="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-400" src="" alt="Avatar">
         <div>
           <h4 id="profile-modal-name" class="text-base font-extrabold text-white">Nombre Abogado</h4>
           <p id="profile-modal-spec" class="text-xs text-emerald-400 font-semibold">Especialidad</p>
           <div id="profile-modal-tp-badge" class="mt-1 p-1 px-2 rounded-md bg-emerald-950/80 border border-emerald-500/40 text-[10px] text-emerald-300 font-bold">
-            T.P. DEMO-159137 • Verificada CSJ
+            T.P. No. 284.912 del CSJ • Verificada
           </div>
         </div>
       </div>
 
-      <div class="space-y-2 text-xs">
-        <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-1">
-          <div class="font-bold text-emerald-400">Títulos Acreditados:</div>
-          <ul id="profile-modal-titulos" class="list-disc list-inside text-slate-300 space-y-0.5"></ul>
-        </div>
+      <p id="profile-modal-bio" class="text-xs text-slate-300 leading-relaxed bg-slate-950/80 p-3 rounded-2xl border border-slate-800">
+        Descripción profesional...
+      </p>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-            <div class="text-[10px] text-slate-400">Universidad</div>
-            <div id="profile-modal-univ" class="font-bold text-white mt-0.5">Univ. del Valle</div>
-          </div>
-          <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-            <div class="text-[10px] text-slate-400">Casos en Abogao</div>
-            <div id="profile-modal-cases" class="font-bold text-emerald-400 mt-0.5">55 casos</div>
-          </div>
-        </div>
-
+      <div class="grid grid-cols-2 gap-2 text-xs">
         <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-          <div class="text-[10px] text-slate-400">Horario & Domicilio</div>
-          <div id="profile-modal-schedule" class="font-bold text-white mt-0.5">24 horas • Granada, Cali</div>
+          <div class="text-[10px] text-slate-400">Universidad</div>
+          <div id="profile-modal-univ" class="font-bold text-white mt-0.5">Univ. del Valle</div>
+        </div>
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400">Trayectoria</div>
+          <div id="profile-modal-cases" class="font-bold text-emerald-400 mt-0.5">300+ Casos</div>
         </div>
       </div>
 
@@ -569,23 +492,23 @@
 
       <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-4 space-y-3">
         <div class="flex items-center justify-between text-xs">
-          <span class="text-slate-300" id="apple-pay-service-title">Atención Legal Inmediata</span>
-          <span class="text-emerald-400 font-bold text-sm" id="apple-pay-modal-amount">$60.000 COP</span>
+          <span class="text-slate-300" id="apple-pay-service-title">Videollamada Cifrada Express</span>
+          <span class="text-emerald-400 font-bold text-sm" id="apple-pay-modal-amount">$95.000 COP</span>
         </div>
 
         <div class="p-2.5 bg-amber-950/40 border border-amber-500/40 rounded-xl text-[11px] text-amber-200 leading-snug space-y-1">
           <div class="font-bold flex items-center gap-1 text-amber-400">
             <i data-lucide="alert-triangle" class="w-3.5 h-3.5 shrink-0"></i>
-            <span>Garantía de Selección y Custodia:</span>
+            <span>Política de Reasignación Automática:</span>
           </div>
           <p>
-            Pago en custodia hasta confirmar atención. Si la contraparte genera conflicto de interés, podrás elegir libremente entre otros 2 especialistas o recibir la devolución inmediata.
+            Si el abogado asignado no puede aceptar tu caso, se reasignará automáticamente al especialista más calificado. Podrás revisar el cambio desde tu panel <strong>"Órdenes"</strong> y aceptarlo o cancelar el servicio. De no cancelar, la atención continuará con el nuevo abogado.
           </p>
         </div>
 
         <div class="text-[11px] text-slate-400 flex items-center gap-1.5 border-t border-slate-800 pt-2">
           <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span>Autenticación biométrica cifrada en Wallet</span>
+          <span>Autenticación biométrica cifrada con tarjeta en Wallet</span>
         </div>
 
         <button id="btn-trigger-applepay-biometric" class="w-full py-3.5 bg-white hover:bg-slate-200 text-black font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 active:scale-98 shadow-xl">
@@ -597,8 +520,8 @@
       <div id="applepay-modal-status-msg" class="hidden text-xs p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 flex items-center space-x-2">
         <i data-lucide="check-circle2" class="w-5 h-5 text-emerald-400 shrink-0"></i>
         <div>
-          <div class="font-bold">¡Pago Aprobado!</div>
-          <div class="text-[10px] text-slate-300">Iniciando conexión con el especialista...</div>
+          <div class="font-bold">¡Pago Aprobado con Apple Pay!</div>
+          <div class="text-[10px] text-slate-300">Conectando servicio legal inmediato en Cali...</div>
         </div>
       </div>
 
@@ -612,7 +535,7 @@
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center space-x-2">
           <i data-lucide="navigation-2" class="w-5 h-5 text-red-500"></i>
-          <h3 class="text-base font-bold">Desplazamiento Presencial de Abogado</h3>
+          <h3 class="text-base font-bold">Desplazamiento de Abogado al Lugar</h3>
         </div>
         <button id="btn-close-dispatch" class="text-slate-400 hover:text-white transition">
           <i data-lucide="x" class="w-5 h-5"></i>
@@ -669,7 +592,7 @@
               <i data-lucide="shield-check" class="w-3 h-3"></i> Cifrada P2P Privada
             </span>
           </div>
-          <div id="videocall-lawyer-title" class="text-[11px] text-slate-400">Atendido por: Dra. Laura Restrepo</div>
+          <div id="videocall-lawyer-title" class="text-[11px] text-slate-400">Atendido por: Dr. Abogado</div>
         </div>
       </div>
 
@@ -701,7 +624,7 @@
       </div>
 
       <p class="text-xs text-slate-400 leading-relaxed">
-        Ingresa tu clave privada de la API de Google Gemini para habilitar la clasificación inteligente de casos. La clave se guardará únicamente de forma local en tu navegador (<code class="text-emerald-400 font-mono">localStorage</code>).
+        Ingresa tu clave privada de la API de Google Gemini para habilitar el procesamiento inteligente de notas de voz. La clave se guardará únicamente de forma local en tu navegador (<code class="text-emerald-400 font-mono">localStorage</code>).
       </p>
 
       <div class="space-y-3">
@@ -758,7 +681,6 @@
   <script src="js/config.js"></script>
   <script src="js/catalog.js"></script>
   <script src="js/lawyersData.js"></script>
-  <script src="js/voiceGuide.js"></script>
   <script src="js/mapController.js"></script>
   <script src="js/audioRecorder.js"></script>
   <script src="js/googleApiTest.js"></script>
