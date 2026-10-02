@@ -1,7 +1,7 @@
 /**
  * Lógica del Panel Administrativo e Inyector de Casos para Abogao
- * Controla la activación de casos simulados, creación de casos personalizados
- * y mantenimiento de la plataforma.
+ * Controla la activación de casos simulados, creación de casos personalizados,
+ * directorio de abogados registrados con verificación CSJ y mantenimiento.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -44,6 +44,118 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (apiModelEl) apiModelEl.textContent = model;
+  }
+
+  // RENDER DIRECTORIO DE ABOGADOS REGISTRADOS
+  function renderLawyersDirectory() {
+    const tableBody = document.getElementById('admin-lawyers-table-body');
+    if (!tableBody) return;
+
+    const currentProfile = LawyerDriver.getProfile();
+    const expYearsCurrent = LawyerDriver.calculateExpYears(currentProfile.tpIssueDate);
+
+    const baseList = (typeof PROFESIONALES !== 'undefined') ? PROFESIONALES : [];
+
+    // Formatear lista combinada
+    const lawyersList = [
+      {
+        id: 'user-active-lawyer',
+        isMainProfile: true,
+        name: currentProfile.name || 'Dr. Carlos Osorio',
+        tpNumber: currentProfile.tpNumber || '213959',
+        ccNumber: currentProfile.ccNumber || '1.144.123.456',
+        tpIssueDate: currentProfile.tpIssueDate || '2015-06-15',
+        expYears: expYearsCurrent || 11,
+        university: currentProfile.university || 'Pontificia Universidad Javeriana',
+        specialties: currentProfile.activeSpecialties || ['penal', 'transito'],
+        verifiedCSJ: currentProfile.verifiedCSJ !== false
+      },
+      ...baseList.slice(0, 5).map(p => ({
+        id: p.id,
+        isMainProfile: false,
+        name: p.name,
+        tpNumber: (p.doc || 'DEMO-159137').replace(/[^0-9]/g, '') || '159137',
+        ccNumber: '1.144.987.654',
+        expYears: p.experienceYears || 12,
+        university: p.university || 'Universidad del Valle',
+        specialties: p.areas || ['penal'],
+        verifiedCSJ: p.verificacion ? p.verificacion.tarjeta : true
+      }))
+    ];
+
+    tableBody.innerHTML = '';
+
+    lawyersList.forEach((lawyer) => {
+      const tr = document.createElement('tr');
+      tr.className = "hover:bg-slate-950/60 transition";
+
+      const specsBadges = lawyer.specialties.map(s => `
+        <span class="px-2 py-0.5 rounded bg-slate-800 text-emerald-400 font-bold text-[10px] border border-slate-700 capitalize">
+          ${s}
+        </span>
+      `).join(' ');
+
+      tr.innerHTML = `
+        <td class="p-3">
+          <div class="font-extrabold text-white flex items-center gap-1.5">
+            <span>${lawyer.name}</span>
+            ${lawyer.isMainProfile ? '<span class="text-[9px] font-bold px-1.5 py-0.2 bg-emerald-500/20 text-emerald-400 rounded border border-emerald-500/30">Perfil Activo</span>' : ''}
+          </div>
+          <div class="text-[10px] text-slate-400 truncate max-w-[180px] mt-0.5">${lawyer.university}</div>
+        </td>
+
+        <td class="p-3">
+          <div class="font-mono text-emerald-400 font-bold">T.P. No. ${lawyer.tpNumber}</div>
+          <div class="text-[10px] text-slate-400">C.C. ${lawyer.ccNumber}</div>
+        </td>
+
+        <td class="p-3">
+          <span class="font-bold text-white">${lawyer.expYears} Años</span>
+          <div class="text-[10px] text-slate-400">Ejercicio legal</div>
+        </td>
+
+        <td class="p-3">
+          <div class="flex flex-wrap gap-1">
+            ${specsBadges}
+          </div>
+        </td>
+
+        <td class="p-3">
+          <button class="btn-toggle-csj-status px-2.5 py-1 rounded-full text-[10px] font-extrabold border transition active:scale-95 flex items-center gap-1 ${lawyer.verifiedCSJ ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30'}" data-id="${lawyer.id}">
+            <i data-lucide="${lawyer.verifiedCSJ ? 'badge-check' : 'alert-circle'}" class="w-3.5 h-3.5"></i>
+            <span>${lawyer.verifiedCSJ ? 'Verificado CSJ' : 'En Revisión'}</span>
+          </button>
+        </td>
+
+        <td class="p-3 text-right">
+          <a href="https://sirna.ramajudicial.gov.co/" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl border border-slate-700 text-[10px] font-bold transition inline-flex items-center gap-1">
+            <i data-lucide="external-link" class="w-3 h-3"></i>
+            <span>Audit CSJ</span>
+          </a>
+        </td>
+      `;
+
+      tableBody.appendChild(tr);
+    });
+
+    tableBody.querySelectorAll('.btn-toggle-csj-status').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        if (id === 'user-active-lawyer') {
+          currentProfile.verifiedCSJ = !currentProfile.verifiedCSJ;
+          LawyerDriver.saveProfile(currentProfile);
+          renderLawyersDirectory();
+        } else {
+          const target = baseList.find(p => p.id === id);
+          if (target && target.verificacion) {
+            target.verificacion.tarjeta = !target.verificacion.tarjeta;
+            renderLawyersDirectory();
+          }
+        }
+      });
+    });
+
+    if (window.lucide) lucide.createIcons();
   }
 
   function renderCasesList() {
@@ -140,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         active: true,
         title: title,
         situation: situation,
+        specKey: situation.includes('transito') ? 'transito' : (situation.includes('Familia') ? 'familia' : (situation.includes('Allanamiento') ? 'policivo' : 'penal')),
         neighborhood: neighborhood,
         rateCOP: rateCOP,
         mode: mode,
@@ -175,11 +288,13 @@ document.addEventListener('DOMContentLoaded', () => {
         LawyerDriver.getSimulatedCases(); // Vuelve a guardar defaults
         renderDashboardStats();
         renderCasesList();
+        renderLawyersDirectory();
         alert("Estado restablecido con éxito.");
       }
     });
   }
 
   renderDashboardStats();
+  renderLawyersDirectory();
   renderCasesList();
 });

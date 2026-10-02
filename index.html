@@ -741,10 +741,16 @@
           </div>
         </div>
 
-        <button id="btn-driver-toggle-online" class="py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs tracking-wider rounded-2xl shadow-xl transition active:scale-95 flex items-center space-x-2">
-          <i data-lucide="power" class="w-4 h-4"></i>
-          <span id="btn-driver-toggle-text">CONECTARSE</span>
-        </button>
+        <div class="flex items-center space-x-2">
+          <button id="btn-open-lawyer-profile" type="button" class="p-3 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-2xl border border-slate-700 transition active:scale-95 flex items-center space-x-1.5 text-xs font-bold" title="Configurar Perfil y Práctica">
+            <i data-lucide="settings" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Configurar Perfil</span>
+          </button>
+          <button id="btn-driver-toggle-online" type="button" class="py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs tracking-wider rounded-2xl shadow-xl transition active:scale-95 flex items-center space-x-2">
+            <i data-lucide="power" class="w-4 h-4"></i>
+            <span id="btn-driver-toggle-text">CONECTARSE</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -766,6 +772,170 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- MODAL / SCREEN CONFIGURAR PERFIL DEL ABOGADO -->
+  <div id="screen-lawyer-profile" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-6 max-w-2xl w-full shadow-2xl space-y-5 text-white max-h-[90vh] overflow-y-auto">
+
+      <!-- HEADER -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            <i data-lucide="user-check" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-base sm:text-lg font-extrabold text-white">Perfil y Práctica del Abogado</h3>
+            <p class="text-xs text-slate-400">Acreditación CSJ, especialidades activas y cobertura en Cali</p>
+          </div>
+        </div>
+
+        <button id="btn-close-lawyer-profile" type="button" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- FORM BODY -->
+      <form id="form-lawyer-profile" class="space-y-5">
+
+        <!-- BLOQUE A: ACREDITACIÓN PROFESIONAL Y EXPERIENCIA -->
+        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
+            <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i>
+            <span>Acreditación Profesional & Años de Ejercicio</span>
+          </h4>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block font-medium text-slate-300 mb-1">Tarjeta Profesional (T.P. No.):</label>
+              <input id="input-profile-tp" type="text" required placeholder="Ej. 284912" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none font-mono">
+            </div>
+
+            <div>
+              <label class="block font-medium text-slate-300 mb-1">Cédula de Ciudadanía (C.C.):</label>
+              <input id="input-profile-cc" type="text" required placeholder="Ej. 1.144.123.456" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none font-mono">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block font-medium text-slate-300 mb-1">Fecha Expedición T.P.:</label>
+              <input id="input-profile-tp-date" type="date" required class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block font-medium text-slate-300 mb-1">Experiencia Demostrable:</label>
+              <div id="profile-exp-years-badge" class="p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 font-extrabold text-xs flex items-center gap-1.5">
+                <i data-lucide="briefcase" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                <span id="text-exp-years-count">0 Años de Ejercicio Legal Demostrable</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-xs">
+            <label class="block font-medium text-slate-300 mb-1">Universidad & Posgrados / Títulos:</label>
+            <textarea id="input-profile-university" rows="2" placeholder="Ej. Universidad del Valle • Especialización en Derecho Penal..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none resize-none"></textarea>
+          </div>
+
+          <!-- VERIFICACIÓN OFICIAL CSJ -->
+          <div class="flex items-center justify-between p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs flex-wrap gap-2">
+            <div class="flex items-center gap-2">
+              <span id="badge-csj-status" class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30 flex items-center gap-1">
+                <i data-lucide="badge-check" class="w-3.5 h-3.5"></i>
+                <span id="text-csj-status">Tarjeta Profesional Activa y Vigente</span>
+              </span>
+            </div>
+
+            <a href="https://sirna.ramajudicial.gov.co/" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              <span>Comprobar Vigencia en Rama Judicial</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- BLOQUE B: ÁREAS DE PRÁCTICA (ESPECIALIDADES ACTIVAS) -->
+        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="check-square" class="w-4 h-4 text-emerald-400"></i>
+              <span>Áreas de Práctica (Especialidades Activas)</span>
+            </h4>
+            <span class="text-[10px] text-slate-400">Sólo recibirás casos de las áreas activas</span>
+          </div>
+
+          <div class="flex flex-wrap gap-2" id="profile-specialties-pills">
+            <button type="button" class="btn-profile-spec-pill px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border bg-emerald-500/20 text-emerald-300 border-emerald-500/40" data-spec="penal">
+              <i data-lucide="scale" class="w-4 h-4"></i>
+              <span>Penal y Capturas</span>
+            </button>
+            <button type="button" class="btn-profile-spec-pill px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border bg-slate-800 text-slate-400 border-slate-700" data-spec="transito">
+              <i data-lucide="car" class="w-4 h-4"></i>
+              <span>Tránsito y Accidentes</span>
+            </button>
+            <button type="button" class="btn-profile-spec-pill px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border bg-slate-800 text-slate-400 border-slate-700" data-spec="policivo">
+              <i data-lucide="shield" class="w-4 h-4"></i>
+              <span>Policía y Convivencia</span>
+            </button>
+            <button type="button" class="btn-profile-spec-pill px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border bg-slate-800 text-slate-400 border-slate-700" data-spec="familia">
+              <i data-lucide="heart-handshake" class="w-4 h-4"></i>
+              <span>Familia y Violencia Doméstica</span>
+            </button>
+            <button type="button" class="btn-profile-spec-pill px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border bg-slate-800 text-slate-400 border-slate-700" data-spec="civil">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+              <span>Civil y Arrendamientos</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- BLOQUE C: TARIFAS Y COBERTURA EN CALI -->
+        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i>
+            <span>Tarifas y Cobertura Local en Cali</span>
+          </h4>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block font-medium text-slate-300 mb-1">Tarifa Consulta Virtual ($ COP):</label>
+              <input id="input-profile-rate-virtual" type="number" required value="70000" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block font-medium text-slate-300 mb-1">Tarifa Desplazamiento ($ COP):</label>
+              <input id="input-profile-rate-travel" type="number" required value="130000" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+            </div>
+          </div>
+
+          <div class="text-xs space-y-1.5">
+            <label class="block font-medium text-slate-300">Zonas de Cobertura en Cali:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="profile-coverage-zones">
+              <label class="flex items-center space-x-2 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-emerald-500/50">
+                <input type="checkbox" value="Zona Norte (Granada, Santa Mónica, Chipichape)" checked class="rounded border-slate-700 text-emerald-500 focus:ring-0">
+                <span class="text-slate-300">Zona Norte (Granada, Chipichape)</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-emerald-500/50">
+                <input type="checkbox" value="Zona Sur (Ciudad Jardín, Valle del Lili, Pasoancho)" checked class="rounded border-slate-700 text-emerald-500 focus:ring-0">
+                <span class="text-slate-300">Zona Sur (Ciudad Jardín, Valle Lili)</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-emerald-500/50">
+                <input type="checkbox" value="Zona Oeste / Centro (San Antonio, El Peñón)" checked class="rounded border-slate-700 text-emerald-500 focus:ring-0">
+                <span class="text-slate-300">Zona Oeste / Centro (El Peñón)</span>
+              </label>
+              <label class="flex items-center space-x-2 p-2 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer hover:border-emerald-500/50">
+                <input type="checkbox" value="Zona Tradicional (San Fernando, Tequendama)" checked class="rounded border-slate-700 text-emerald-500 focus:ring-0">
+                <span class="text-slate-300">Zona Tradicional (San Fernando)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs sm:text-sm rounded-xl transition flex items-center justify-center space-x-2 active:scale-98 shadow-xl">
+          <i data-lucide="save" class="w-4 h-4"></i>
+          <span>Guardar Perfil Profesional</span>
+        </button>
+
+      </form>
+    </div>
   </div>
 
   <!-- ACCEPTED CASE DETAIL / ACTIVE ATTENTION MODAL FOR LAWYER -->

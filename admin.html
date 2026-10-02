@@ -67,6 +67,41 @@
     </div>
   </section>
 
+  <!-- REGISTERED LAWYERS DIRECTORY SECTION -->
+  <section class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="award" class="w-5 h-5 text-emerald-400"></i>
+        <h2 class="text-base font-extrabold text-white">Directorio de Abogados Registrados & Verificación CSJ</h2>
+      </div>
+      <span id="admin-lawyers-badge" class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold">
+        Acreditación Rama Judicial
+      </span>
+    </div>
+
+    <p class="text-xs text-slate-400 leading-relaxed">
+      Revisa perfiles, Tarjeta Profesional (T.P.), Cédula, años de experiencia calculados y audita la vigencia oficial en el Registro Nacional de Abogados.
+    </p>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead class="bg-slate-950 text-slate-400 uppercase font-mono border-b border-slate-800">
+          <tr>
+            <th class="p-3">Abogado / Profesional</th>
+            <th class="p-3">Acreditación T.P. & C.C.</th>
+            <th class="p-3">Experiencia</th>
+            <th class="p-3">Especialidades</th>
+            <th class="p-3">Estado CSJ</th>
+            <th class="p-3 text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="admin-lawyers-table-body" class="divide-y divide-slate-800 text-slate-200">
+          <!-- Populated from js/admin.js -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <!-- MAIN GRID: SIMULATED CASES MANAGEMENT + INJECTION FORM -->
   <main class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
