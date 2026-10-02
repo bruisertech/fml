@@ -36,6 +36,12 @@
     </div>
 
     <div class="flex items-center space-x-2">
+      <!-- ROLE SWITCHER BUTTON -->
+      <button id="btn-toggle-role" class="flex items-center space-x-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs px-3 py-2 rounded-full transition shadow-xl active:scale-95" title="Cambiar Rol">
+        <i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i>
+        <span id="header-role-label" class="font-bold">Cliente</span>
+      </button>
+
       <!-- RUTAS JURÍDICAS BUTTON -->
       <button id="btn-open-routes-modal" class="flex items-center space-x-1.5 bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 text-white text-xs px-3 py-2 rounded-full border border-slate-800 transition shadow-xl active:scale-95">
         <i data-lucide="map" class="w-4 h-4 text-emerald-400"></i>
@@ -86,7 +92,7 @@
               <i data-lucide="siren" class="w-5 h-5"></i>
             </div>
             <div>
-              <div class="text-xs font-extrabold text-white">🚨 Urgencia Inmediata</div>
+              <div class="text-xs font-extrabold text-white">Urgencia Inmediata</div>
               <div class="text-[10px] text-red-200">Te está pasando ahora mismo</div>
             </div>
           </button>
@@ -96,7 +102,7 @@
               <i data-lucide="calendar" class="w-5 h-5"></i>
             </div>
             <div>
-              <div class="text-xs font-extrabold text-white">📅 Consulta Preventiva</div>
+              <div class="text-xs font-extrabold text-white">Consulta Preventiva</div>
               <div class="text-[10px] text-slate-400">Revisión, trámites futuros</div>
             </div>
           </button>
@@ -121,14 +127,19 @@
         </div>
 
         <!-- RED ALERT BANNER FOR 123 EMERGENCY -->
-        <div id="banner-123-emergency" class="hidden p-3 bg-red-950/90 border border-red-500 rounded-2xl text-xs space-y-2 text-red-200">
-          <p class="leading-relaxed">
-            ⚠️ <strong>Prioridad Médica / Policial</strong>: Si hay personas heridas, comunícate de inmediato con la <strong>Línea de Emergencias 123 o Ambulancias</strong>. Nuestro abogado atenderá la representación jurídica paralelamente.
+        <div id="banner-123-emergency" class="hidden p-3 bg-red-950/90 border border-red-500 rounded-2xl text-xs space-y-2.5 text-red-200">
+          <p class="leading-relaxed flex items-start gap-1.5">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-red-400 shrink-0 mt-0.5"></i>
+            <span><strong>Prioridad Médica / Policial</strong>: Si hay personas heridas, comunícate de inmediato con la <strong>Línea de Emergencias 123 o Ambulancias</strong>. Nuestro abogado atenderá la representación jurídica paralelamente.</span>
           </p>
-          <a href="tel:123" class="w-full py-2 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-xl transition flex items-center justify-center space-x-2 shadow-lg">
+          <a href="tel:123" class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-xl transition flex items-center justify-center space-x-2 shadow-lg">
             <i data-lucide="phone-call" class="w-4 h-4"></i>
             <span>LLAMAR AHORA AL 123 EN CALI</span>
           </a>
+          <button id="btn-continue-legal-123" type="button" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-lg border border-emerald-400">
+            <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+            <span>Ya me comuniqué con emergencias / Continuar con asistencia legal</span>
+          </button>
         </div>
       </div>
 
@@ -160,8 +171,14 @@
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">Descripción del Caso:</span>
           <div class="flex items-center space-x-1 bg-slate-800 p-1 rounded-xl border border-slate-700 text-[11px]">
-            <button id="btn-mode-text" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-black font-bold transition">✍️ Texto</button>
-            <button id="btn-mode-audio" class="px-2.5 py-1 rounded-lg text-slate-400 font-medium hover:text-white transition">🎤 Audio</button>
+            <button id="btn-mode-text" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-black font-bold transition flex items-center gap-1">
+              <i data-lucide="edit-3" class="w-3 h-3"></i>
+              <span>Texto</span>
+            </button>
+            <button id="btn-mode-audio" class="px-2.5 py-1 rounded-lg text-slate-400 font-medium hover:text-white transition flex items-center gap-1">
+              <i data-lucide="mic" class="w-3 h-3"></i>
+              <span>Audio</span>
+            </button>
           </div>
         </div>
 
@@ -193,7 +210,7 @@
         <!-- AI GEMINI BUTTON -->
         <button id="btn-analyze-text-ai" class="w-full py-2 px-3 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-xs rounded-xl border border-emerald-500/40 transition flex items-center justify-center space-x-1.5 active:scale-95">
           <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
-          <span>✨ Resumir Caso con IA Gemini</span>
+          <span>Resumir Caso con IA Gemini</span>
         </button>
 
         <!-- SHARED AI ANALYSIS FEEDBACK -->
@@ -267,12 +284,13 @@
       <!-- MAIN FEATURED LAWYER CARD WITH PUBLIC T.P. VERIFIED BADGE -->
       <div id="main-lawyer-card" class="bg-slate-950/80 border border-emerald-500/40 rounded-2xl p-3.5 space-y-3 relative shadow-lg">
         <div class="flex items-center justify-between">
-          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-            ★ Opción 1 (Recomendada)
+          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+            <i data-lucide="star" class="w-3 h-3 fill-emerald-400 text-emerald-400"></i>
+            <span>Opción 1 (Recomendada)</span>
           </span>
           <button id="btn-omit-main-lawyer" class="text-xs text-red-400 hover:text-red-300 font-semibold flex items-center gap-1 px-2 py-1 rounded-lg bg-red-950/40 border border-red-500/30 hover:bg-red-900/60 transition active:scale-95">
             <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
-            <span>X Omitir</span>
+            <span>Omitir</span>
           </button>
         </div>
 
@@ -281,7 +299,8 @@
           <button id="btn-trigger-lawyer-profile-avatar" class="relative group cursor-pointer focus:outline-none shrink-0">
             <img id="match-lawyer-avatar" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-emerald-500 shadow-lg group-hover:opacity-80 transition" src="" alt="Abogado">
             <span class="absolute -bottom-1 -right-1 bg-emerald-500 text-black text-[9px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow">
-              ★ <span id="match-lawyer-rating">4.9</span>
+              <i data-lucide="star" class="w-2.5 h-2.5 fill-black text-black"></i>
+              <span id="match-lawyer-rating">4.9</span>
             </span>
           </button>
 
@@ -340,12 +359,12 @@
         <div class="space-y-2 pt-1">
           <button id="btn-start-videocall-checkout" class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs sm:text-sm rounded-xl transition shadow-xl flex items-center justify-center space-x-2 active:scale-98">
             <i data-lucide="video" class="w-4 h-4"></i>
-            <span>📹 INICIAR VIDEOLLAMADA INMEDIATA ($<span id="btn-video-price">95.000</span>)</span>
+            <span>INICIAR VIDEOLLAMADA INMEDIATA ($<span id="btn-video-price">95.000</span>)</span>
           </button>
 
           <button id="btn-open-dispatch-modal" class="w-full py-2 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center space-x-2 active:scale-98">
-            <i data-lucide="navigation" class="w-3.5 h-3.5 text-red-400"></i>
-            <span>📍 SOLICITAR ABOGADO AL LUGAR ($<span id="btn-dispatch-price">180.000</span>)</span>
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-400"></i>
+            <span>SOLICITAR ABOGADO AL LUGAR ($<span id="btn-dispatch-price">180.000</span>)</span>
           </button>
         </div>
       </div>
@@ -604,6 +623,14 @@
 
       <div class="space-y-3">
         <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Perfil / Rol Activo:</label>
+          <select id="select-modal-role" class="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+            <option value="client">Cliente / Persona Natural</option>
+            <option value="lawyer">Abogado / Profesional (Modo Uber Driver)</option>
+          </select>
+        </div>
+
+        <div>
           <label class="block text-xs font-medium text-slate-300 mb-1">Google Gemini API Key:</label>
           <input id="input-api-key" type="password" placeholder="AIzaSy..." class="w-full bg-slate-800 border border-slate-700 text-white text-xs rounded-xl p-3 focus:border-emerald-500 focus:outline-none font-mono">
         </div>
@@ -633,6 +660,48 @@
     </div>
   </div>
 
+  <!-- MODAL SELECCIÓN DE ROL INICIAL / SWITCHER -->
+  <div id="role-selection-modal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5 text-white text-center">
+
+      <div class="mx-auto w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+        <i data-lucide="scale" class="w-6 h-6"></i>
+      </div>
+
+      <div class="space-y-1">
+        <h2 class="text-xl font-extrabold tracking-tight text-white">Bienvenido a Abo<span class="text-emerald-400">gao</span></h2>
+        <p class="text-xs text-slate-400">Plataforma de servicios jurídicos inmediatos en Cali, Colombia</p>
+      </div>
+
+      <p class="text-xs font-semibold text-slate-300">Selecciona tu perfil para continuar:</p>
+
+      <div class="space-y-3">
+        <!-- OPTION 1: CLIENT -->
+        <button id="btn-select-role-client" class="w-full p-4 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500 rounded-2xl text-left transition active:scale-98 flex items-center space-x-3 group shadow-lg">
+          <div class="p-3 rounded-xl bg-emerald-500/20 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-black transition shrink-0">
+            <i data-lucide="user" class="w-6 h-6"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-extrabold text-white group-hover:text-emerald-400 transition">Soy Persona Natural / Cliente</div>
+            <div class="text-xs text-slate-400 leading-tight mt-0.5">Necesito asistencia legal inmediata o consulta jurídica</div>
+          </div>
+        </button>
+
+        <!-- OPTION 2: LAWYER -->
+        <button id="btn-select-role-lawyer" class="w-full p-4 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500 rounded-2xl text-left transition active:scale-98 flex items-center space-x-3 group shadow-lg">
+          <div class="p-3 rounded-xl bg-blue-500/20 text-blue-400 group-hover:bg-blue-500 group-hover:text-black transition shrink-0">
+            <i data-lucide="briefcase" class="w-6 h-6"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-extrabold text-white group-hover:text-blue-400 transition">Soy Abogado / Profesional</div>
+            <div class="text-xs text-slate-400 leading-tight mt-0.5">Quiero prestar servicios y recibir casos en tiempo real</div>
+          </div>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- MODAL MIS ÓRDENES -->
   <div id="orders-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-white">
@@ -652,11 +721,184 @@
     </div>
   </div>
 
+  <!-- LAWYER / UBER DRIVER PANEL SCREEN -->
+  <div id="screen-lawyer-driver" class="hidden absolute inset-0 z-20 pointer-events-none flex flex-col justify-between p-4">
+
+    <!-- TOP DRIVER STATUS BAR -->
+    <div class="pointer-events-auto max-w-lg mx-auto w-full bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-3xl p-4 shadow-2xl space-y-3 mt-16 text-white">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="relative">
+            <img class="w-12 h-12 rounded-2xl object-cover border-2 border-emerald-400 shadow-lg" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=250" alt="Dr. Abogado">
+            <span id="driver-status-dot" class="absolute -bottom-1 -right-1 w-4 h-4 bg-slate-500 border-2 border-slate-900 rounded-full"></span>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-1.5">
+              <span>Dr. Carlos Osorio</span>
+              <span class="px-2 py-0.2 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">T.P. CSJ</span>
+            </h3>
+            <p id="driver-status-text" class="text-xs text-slate-400 font-medium">Modo Abogado • Desconectado</p>
+          </div>
+        </div>
+
+        <button id="btn-driver-toggle-online" class="py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs tracking-wider rounded-2xl shadow-xl transition active:scale-95 flex items-center space-x-2">
+          <i data-lucide="power" class="w-4 h-4"></i>
+          <span id="btn-driver-toggle-text">CONECTARSE</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- INCOMING CASES RADAR CARDS (FLOATING AT BOTTOM) -->
+    <div class="pointer-events-auto max-w-lg mx-auto w-full space-y-3 mb-2">
+      <div id="driver-radar-header" class="hidden bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl p-3 flex items-center justify-between text-xs text-slate-300 shadow-xl">
+        <div class="flex items-center space-x-2">
+          <div class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          </div>
+          <span class="font-bold text-white">Radar en vivo de Casos en Cali</span>
+        </div>
+        <span id="driver-cases-count" class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30 text-[11px]">3 Casos cercanos</span>
+      </div>
+
+      <div id="driver-incoming-cases-container" class="space-y-3 max-h-[55vh] overflow-y-auto">
+        <!-- Rendered dynamically from js/lawyerDriver.js -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ACCEPTED CASE DETAIL / ACTIVE ATTENTION MODAL FOR LAWYER -->
+  <div id="driver-case-active-modal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div id="driver-case-active-box" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 max-w-2xl w-full shadow-2xl space-y-4 text-white max-h-[90vh] overflow-y-auto transition-all duration-300">
+
+      <!-- HEADER -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2">
+          <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </span>
+          <div>
+            <h3 class="text-sm sm:text-base font-extrabold text-white" id="active-case-title">Caso Aceptado #104</h3>
+            <p class="text-[11px] text-emerald-400 font-semibold" id="active-case-location">Av. Roosevelt con Cra 39 • Cali</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <div class="font-mono text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl text-emerald-400 flex items-center gap-1.5" id="active-case-timer">
+            <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+            <span>00:00</span>
+          </div>
+          <button id="btn-close-active-case-modal" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN CONTENT GRID (CLIENT DATA + RECURSOS) -->
+      <div id="driver-case-split-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- LEFT COLUMN: CLIENT DATA & PROMPT -->
+        <div class="space-y-3 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
+            <i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i>
+            <span>Información del Cliente</span>
+          </h4>
+
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Cliente:</span>
+              <span id="active-client-name" class="font-bold text-white">Juan Carlos Pérez</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Teléfono:</span>
+              <a id="active-client-phone" href="tel:3151234567" class="font-bold text-emerald-400 flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30 hover:underline">
+                <i data-lucide="phone-call" class="w-3 h-3"></i>
+                <span>315 123 4567</span>
+              </a>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Tarifa Acordada:</span>
+              <span id="active-case-rate" class="font-extrabold text-emerald-400 text-sm">$130.000 COP</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-400">Modalidad:</span>
+              <span id="active-case-mode" class="font-bold text-slate-200">Videollamada Express</span>
+            </div>
+          </div>
+
+          <div class="space-y-1.5 pt-2 border-t border-slate-800">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Mensaje / Transcripción del Cliente:</span>
+            <div id="active-client-message" class="text-xs text-slate-200 bg-slate-900 p-2.5 rounded-xl border border-slate-800 italic leading-relaxed">
+              "Sufrí una colisión en intersección con herido leve. La otra parte quiere llamar a policía y tránsito."
+            </div>
+          </div>
+
+          <div class="space-y-1.5 pt-1">
+            <span class="text-[11px] font-bold text-emerald-400 uppercase flex items-center gap-1">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              <span>Resumen y Clasificación IA Gemini:</span>
+            </span>
+            <div id="active-ai-summary" class="text-xs text-emerald-300 bg-emerald-950/40 p-2.5 rounded-xl border border-emerald-500/30 leading-relaxed">
+              Urgencia Alta. Posible homicidio culposo o lesiones en accidente de tránsito. Se requiere presencia legal previa a firma de informe policial.
+            </div>
+          </div>
+
+          <button id="btn-driver-start-jitsi-split" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 active:scale-98 shadow-lg">
+            <i data-lucide="video" class="w-4 h-4"></i>
+            <span>INICIAR VIDEOLLAMADA 50/50 CON CLIENTE</span>
+          </button>
+        </div>
+
+        <!-- RIGHT COLUMN: TABLA DE RECURSOS JURÍDICOS REUNIDOS POR LA IA -->
+        <div id="driver-resources-column" class="space-y-3 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
+            <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+            <span>Recursos Jurídicos del Caso (IA Gemini)</span>
+          </h4>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-[11px]">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase font-mono">
+                <tr>
+                  <th class="p-2">Norma / Código</th>
+                  <th class="p-2">Artículo</th>
+                  <th class="p-2">Plazo / Acción</th>
+                </tr>
+              </thead>
+              <tbody id="driver-resources-table-body" class="divide-y divide-slate-800 text-slate-200">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-slate-300 space-y-1">
+            <div class="font-bold text-emerald-400 flex items-center gap-1">
+              <i data-lucide="info" class="w-3.5 h-3.5"></i>
+              <span>Recomendación de Defensa / Estrategia:</span>
+            </div>
+            <p id="driver-resource-advice" class="text-slate-300 leading-snug">
+              Solicitar copia del informe IPAT, verificar alcoholemia previa a declaración y hacer reserva de derechos para conciliación posterior.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SPLIT JITSI CONTAINER FOR LAWYER CALL -->
+      <div id="driver-jitsi-split-view" class="hidden w-full h-[350px] bg-black rounded-2xl overflow-hidden border border-slate-800 relative">
+        <div id="jitsi-driver-container" class="w-full h-full"></div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- JS SCRIPTS -->
   <script src="js/config.js"></script>
   <script src="js/catalog.js"></script>
   <script src="js/lawyersData.js"></script>
   <script src="js/mapController.js"></script>
+  <script src="js/lawyerDriver.js"></script>
   <script src="js/audioRecorder.js"></script>
   <script src="js/googleApiTest.js"></script>
   <script src="js/videoCall.js"></script>

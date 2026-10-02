@@ -98,7 +98,10 @@ const MapController = {
 
       const popupContent = `
         <div class="p-2 text-white font-sans max-w-[200px]">
-          <div class="text-xs font-extrabold text-white">${lawyer.name} ${isTarget ? '🎯' : ''}</div>
+          <div class="text-xs font-extrabold text-white flex items-center justify-between">
+            <span>${lawyer.name}</span>
+            ${isTarget ? '<span class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 text-[9px] border border-emerald-500/30 font-bold">Principal</span>' : ''}
+          </div>
           <div class="text-[10px] text-emerald-400 font-semibold mt-0.5">${lawyer.kind === 'abogado' ? 'Abogado(a)' : lawyer.kind} • ${lawyer.neighborhood}</div>
           <div class="text-[9px] text-slate-300 mt-1">${lawyer.doc || 'T.P. Verificada'}</div>
         </div>
