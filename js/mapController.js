@@ -15,13 +15,13 @@ const MapController = {
     this.map = L.map('map', {
       zoomControl: false,
       attributionControl: true
-    }).setView([defaultCoords.lat, defaultCoords.lng], CONFIG ? CONFIG.DEFAULT_ZOOM : 14);
+    }).setView([defaultCoords.lat, defaultCoords.lng], CONFIG ? CONFIG.DEFAULTZOOM : 14);
 
-    // Dark CartoDB Matter tile layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 19
+    // Standard OpenStreetMap tile layer with dark CSS filter
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+      className: 'map-tiles-dark'
     }).addTo(this.map);
 
     L.control.zoom({ position: 'bottomright' }).addTo(this.map);
@@ -63,61 +63,54 @@ const MapController = {
         <div class="user-location-pulse"></div>
         <div class="user-location-dot"></div>
       `,
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
+      iconSize: [32, 32],
+      iconAnchor: [16, 16]
     });
 
     this.userMarker = L.marker([coords.lat, coords.lng], { icon: userIcon }).addTo(this.map);
-    this.userMarker.bindTooltip("Tu Ubicación en Cali", { permanent: false, direction: "top" });
   },
 
-  renderLawyerMarkers(lawyers, onLawyerSelectCallback) {
-    this.clearLawyerMarkers();
+  renderLawyerMarkers(lawyers, onMarkerClickCallback) {
+    // Clear existing lawyer markers
+    this.lawyerMarkers.forEach(m => this.map.removeLayer(m));
+    this.lawyerMarkers = [];
 
-    lawyers.forEach((lawyer) => {
-      const lawyerIcon = L.divIcon({
-        className: 'custom-lawyer-icon',
+    lawyers.forEach(lawyer => {
+      const isTarget = lawyer.isTargetMatch;
+      const markerColor = isTarget ? '#10B981' : '#3B82F6';
+
+      const customIcon = L.divIcon({
+        className: 'custom-lawyer-pin-icon',
         html: `
-          <div class="lawyer-marker-pin" title="${lawyer.name}">
-            <img src="${lawyer.avatar}" alt="${lawyer.name}" />
+          <div class="relative flex items-center justify-center">
+            <span class="animate-ping absolute inline-flex h-8 w-8 rounded-full ${isTarget ? 'bg-emerald-400' : 'bg-blue-400'} opacity-50"></span>
+            <div class="relative w-9 h-9 rounded-full bg-slate-900 border-2 ${isTarget ? 'border-emerald-400' : 'border-blue-500'} shadow-xl flex items-center justify-center text-xs font-bold text-white">
+              ${lawyer.name.split(' ').map(x => x[0]).slice(0, 2).join('')}
+            </div>
           </div>
         `,
         iconSize: [36, 36],
         iconAnchor: [18, 18]
       });
 
-      const marker = L.marker([lawyer.lat, lawyer.lng], { icon: lawyerIcon }).addTo(this.map);
+      const marker = L.marker([lawyer.lat, lawyer.lng], { icon: customIcon }).addTo(this.map);
 
       const popupContent = `
-        <div class="p-2 space-y-1.5 text-white max-w-[210px]">
-          <div class="flex items-center space-x-2">
-            <img src="${lawyer.avatar}" class="w-9 h-9 rounded-xl object-cover border border-emerald-400" />
-            <div class="min-w-0">
-              <div class="text-xs font-bold truncate">${lawyer.name}</div>
-              <div class="text-[10px] text-emerald-400 font-semibold">${lawyer.specialty}</div>
-            </div>
-          </div>
-          <div class="p-1 px-1.5 bg-emerald-950/80 border border-emerald-500/40 rounded text-[9px] font-bold text-emerald-300">
-            ✓ ${lawyer.tp}
-          </div>
-          <div class="text-[10px] text-slate-300 flex items-center justify-between">
-            <span>★ ${lawyer.rating}</span>
-            <span>${lawyer.distanceKm} km (${lawyer.etaMinutes} min)</span>
-          </div>
-          <button class="btn-popup-select w-full mt-1 py-1 bg-emerald-500 hover:bg-emerald-600 text-black text-[10px] font-extrabold rounded-lg transition" data-id="${lawyer.id}">
-            Ver Opción
-          </button>
+        <div class="p-2 text-white font-sans max-w-[200px]">
+          <div class="text-xs font-extrabold text-white">${lawyer.name} ${isTarget ? '🎯' : ''}</div>
+          <div class="text-[10px] text-emerald-400 font-semibold mt-0.5">${lawyer.kind === 'abogado' ? 'Abogado(a)' : lawyer.kind} • ${lawyer.neighborhood}</div>
+          <div class="text-[9px] text-slate-300 mt-1">${lawyer.doc || 'T.P. Verificada'}</div>
         </div>
       `;
 
-      marker.bindPopup(popupContent, { closeButton: false });
+      marker.bindPopup(popupContent, {
+        closeButton: false,
+        className: 'custom-leaflet-popup'
+      });
 
-      marker.on('popupopen', () => {
-        const btn = document.querySelector(`.btn-popup-select[data-id="${lawyer.id}"]`);
-        if (btn) {
-          btn.addEventListener('click', () => {
-            if (onLawyerSelectCallback) onLawyerSelectCallback(lawyer);
-          });
+      marker.on('click', () => {
+        if (onMarkerClickCallback) {
+          onMarkerClickCallback(lawyer);
         }
       });
 
@@ -125,33 +118,7 @@ const MapController = {
     });
   },
 
-  clearLawyerMarkers() {
-    this.lawyerMarkers.forEach(m => this.map.removeLayer(m));
-    this.lawyerMarkers = [];
-  },
-
-  triggerRadarAnimation(durationMs = 2500, onComplete) {
-    const mapContainer = document.getElementById('map');
-    if (!mapContainer) return;
-
-    if (this.radarOverlayEl) {
-      this.radarOverlayEl.remove();
-    }
-
-    this.radarOverlayEl = document.createElement('div');
-    this.radarOverlayEl.className = 'radar-scan-overlay';
-    mapContainer.appendChild(this.radarOverlayEl);
-
-    setTimeout(() => {
-      if (this.radarOverlayEl) {
-        this.radarOverlayEl.remove();
-        this.radarOverlayEl = null;
-      }
-      if (onComplete) onComplete();
-    }, durationMs);
+  highlightLawyerMarker(lawyerId) {
+    // Optional highlight logic
   }
 };
-
-if (typeof window !== 'undefined') {
-  window.MapController = MapController;
-}
