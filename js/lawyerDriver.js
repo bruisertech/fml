@@ -1,7 +1,8 @@
 /**
  * Controlador del Panel de Abogado Estilo Uber Driver para Abogao
  * Gestión de estado en línea/offline, radar de casos simulados en vivo,
- * aceptación/rechazo de casos, cronómetro de atención y panel dividido (videollamada + recursos).
+ * perfil del abogado (T.P., C.C., fecha expedición, cálculo de experiencia, verificación CSJ),
+ * filtrado por áreas de práctica activas y cronómetro de atención.
  */
 
 const LawyerDriver = {
@@ -10,12 +11,26 @@ const LawyerDriver = {
   timerSeconds: 0,
   activeCase: null,
 
+  DEFAULT_PROFILE: {
+    name: 'Dr. Carlos Osorio',
+    tpNumber: '213959',
+    ccNumber: '1.144.123.456',
+    tpIssueDate: '2015-06-15',
+    university: 'Pontificia Universidad Javeriana • Especialización en Responsabilidad Civil',
+    verifiedCSJ: true,
+    activeSpecialties: ['penal', 'transito', 'policivo'],
+    virtualRateCOP: 70000,
+    travelRateCOP: 130000,
+    coverageZones: ['Zona Norte (Granada, Chipichape)', 'Zona Tradicional (San Fernando)']
+  },
+
   DEFAULT_CASES: [
     {
       id: 'CASE-101',
       active: true,
       title: 'Accidente de tránsito con lesionados en Av. Roosevelt con Cra 39',
       situation: 'Accidente de tránsito con lesionados',
+      specKey: 'transito',
       neighborhood: 'San Fernando',
       rateCOP: 130000,
       mode: 'Videollamada Express',
@@ -36,6 +51,7 @@ const LawyerDriver = {
       active: true,
       title: 'Captura en flagrancia y traslado a URI Fiscalía (Barrio Granada)',
       situation: 'Captura en flagrancia / Retención',
+      specKey: 'penal',
       neighborhood: 'Granada',
       rateCOP: 150000,
       mode: 'Desplazamiento Presencial',
@@ -56,6 +72,7 @@ const LawyerDriver = {
       active: true,
       title: 'Violencia intrafamiliar / Asistencia en CAI San Fernando',
       situation: 'Violencia Intrafamiliar o Riesgo Inminente',
+      specKey: 'familia',
       neighborhood: 'San Fernando',
       rateCOP: 120000,
       mode: 'Videollamada Express',
@@ -73,6 +90,48 @@ const LawyerDriver = {
     }
   ],
 
+  getProfile() {
+    try {
+      const stored = localStorage.getItem(CONFIG.STORAGE_KEYS.LAWYER_PROFILE);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error("Error cargando perfil del abogado:", e);
+    }
+    localStorage.setItem(CONFIG.STORAGE_KEYS.LAWYER_PROFILE, JSON.stringify(this.DEFAULT_PROFILE));
+    return this.DEFAULT_PROFILE;
+  },
+
+  saveProfile(profile) {
+    localStorage.setItem(CONFIG.STORAGE_KEYS.LAWYER_PROFILE, JSON.stringify(profile));
+    this.syncProfileWithGlobalLawyers(profile);
+  },
+
+  calculateExpYears(tpDateStr) {
+    if (!tpDateStr) return 0;
+    const diffMs = new Date() - new Date(tpDateStr);
+    if (isNaN(diffMs) || diffMs < 0) return 0;
+    return Math.floor(diffMs / (365.25 * 24 * 60 * 60 * 1000));
+  },
+
+  syncProfileWithGlobalLawyers(profile) {
+    if (typeof PROFESIONALES !== 'undefined') {
+      const target = PROFESIONALES.find(p => p.id === 'pro-7' || p.name.includes('Carlos Osorio'));
+      if (target) {
+        target.doc = `T.P. No. ${profile.tpNumber} CSJ`;
+        target.experienceYears = this.calculateExpYears(profile.tpIssueDate);
+        target.university = profile.university;
+        target.priceCOP = profile.virtualRateCOP;
+        target.travelPriceCOP = profile.travelRateCOP;
+        target.areas = profile.activeSpecialties;
+        if (target.verificacion) {
+          target.verificacion.tarjeta = profile.verifiedCSJ;
+        }
+      }
+    }
+  },
+
   getSimulatedCases() {
     try {
       const stored = localStorage.getItem(CONFIG.STORAGE_KEYS.SIMULATED_CASES);
@@ -82,7 +141,6 @@ const LawyerDriver = {
     } catch (e) {
       console.error("Error cargando casos de localStorage:", e);
     }
-    // Inicializar por defecto
     localStorage.setItem(CONFIG.STORAGE_KEYS.SIMULATED_CASES, JSON.stringify(this.DEFAULT_CASES));
     return this.DEFAULT_CASES;
   },
@@ -94,6 +152,7 @@ const LawyerDriver = {
   init() {
     this.setupEventListeners();
     this.checkInitialStatus();
+    this.loadProfileIntoUI();
   },
 
   checkInitialStatus() {
@@ -120,7 +179,7 @@ const LawyerDriver = {
       if (statusDot) statusDot.className = "absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-slate-900 rounded-full animate-pulse";
       if (statusText) statusText.textContent = "Modo Abogado • En Línea (Recibiendo Casos)";
       if (btnToggleText) btnToggleText.textContent = "EN LÍNEA - DESCONECTAR";
-      if (btnToggle) btnToggle.className = "py-3 px-5 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs tracking-wider rounded-2xl shadow-xl transition active:scale-95 flex items-center space-x-2";
+      if (btnToggle) btnToggle.className = "py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs tracking-wider rounded-2xl shadow-xl transition active:scale-95 flex items-center space-x-2";
       if (radarHeader) radarHeader.classList.remove('hidden');
       if (casesContainer) casesContainer.classList.remove('hidden');
 
@@ -129,7 +188,7 @@ const LawyerDriver = {
       if (statusDot) statusDot.className = "absolute -bottom-1 -right-1 w-4 h-4 bg-slate-500 border-2 border-slate-900 rounded-full";
       if (statusText) statusText.textContent = "Modo Abogado • Desconectado";
       if (btnToggleText) btnToggleText.textContent = "CONECTARSE EN LÍNEA";
-      if (btnToggle) btnToggle.className = "py-3 px-5 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs tracking-wider rounded-2xl shadow-xl transition active:scale-95 flex items-center space-x-2";
+      if (btnToggle) btnToggle.className = "py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs tracking-wider rounded-2xl shadow-xl transition active:scale-95 flex items-center space-x-2";
       if (radarHeader) radarHeader.classList.add('hidden');
       if (casesContainer) casesContainer.classList.add('hidden');
     }
@@ -142,10 +201,18 @@ const LawyerDriver = {
     const countBadge = document.getElementById('driver-cases-count');
     if (!container) return;
 
-    const allCases = this.getSimulatedCases();
-    const activeCases = allCases.filter(c => c.active !== false);
+    const profile = this.getProfile();
+    const activeSpecs = profile.activeSpecialties || ['penal', 'transito', 'policivo', 'familia', 'civil'];
 
-    if (countBadge) countBadge.textContent = `${activeCases.length} Casos cercanos`;
+    const allCases = this.getSimulatedCases();
+    // FILTRAR CASOS ACTIVOS Y QUE COINCIDAN CON LAS ESPECIALIDADES ACTIVAS DEL ABOGADO
+    const activeCases = allCases.filter(c => {
+      if (c.active === false) return false;
+      if (!c.specKey) return true; // Si no tiene clave, mostrar
+      return activeSpecs.includes(c.specKey.toLowerCase());
+    });
+
+    if (countBadge) countBadge.textContent = `${activeCases.length} Casos en tus especialidades`;
 
     container.innerHTML = '';
 
@@ -153,8 +220,8 @@ const LawyerDriver = {
       container.innerHTML = `
         <div class="p-5 bg-slate-900/90 border border-slate-800 rounded-2xl text-center text-slate-400 space-y-2">
           <i data-lucide="radar" class="w-8 h-8 text-emerald-500 mx-auto animate-pulse"></i>
-          <p class="text-xs font-semibold">Escaneando casos urgentes en Cali...</p>
-          <p class="text-[11px] text-slate-500">Mantente en línea para recibir la asignación en tiempo real.</p>
+          <p class="text-xs font-semibold">Sin casos activos para tus especialidades marcadas.</p>
+          <p class="text-[11px] text-slate-500">Haz clic en "Configurar Perfil" para activar más áreas de práctica.</p>
         </div>
       `;
       if (window.lucide) lucide.createIcons();
@@ -211,14 +278,14 @@ const LawyerDriver = {
     });
 
     container.querySelectorAll('.btn-reject-driver-case').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         this.rejectCase(id);
       });
     });
 
     container.querySelectorAll('.btn-accept-driver-case').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         this.acceptCase(id);
       });
@@ -320,11 +387,125 @@ const LawyerDriver = {
     if (modal) modal.classList.add('hidden');
   },
 
+  // CARGAR PERFIL EN MODAL
+  loadProfileIntoUI() {
+    const profile = this.getProfile();
+
+    const inputTp = document.getElementById('input-profile-tp');
+    const inputCc = document.getElementById('input-profile-cc');
+    const inputTpDate = document.getElementById('input-profile-tp-date');
+    const inputUniv = document.getElementById('input-profile-university');
+    const inputRateVirtual = document.getElementById('input-profile-rate-virtual');
+    const inputRateTravel = document.getElementById('input-profile-rate-travel');
+
+    if (inputTp) inputTp.value = profile.tpNumber || '213959';
+    if (inputCc) inputCc.value = profile.ccNumber || '1.144.123.456';
+    if (inputTpDate) inputTpDate.value = profile.tpIssueDate || '2015-06-15';
+    if (inputUniv) inputUniv.value = profile.university || 'Pontificia Universidad Javeriana';
+    if (inputRateVirtual) inputRateVirtual.value = profile.virtualRateCOP || 70000;
+    if (inputRateTravel) inputRateTravel.value = profile.travelRateCOP || 130000;
+
+    this.updateExpYearsDisplay(profile.tpIssueDate);
+    this.updateSpecialtyPillsUI(profile.activeSpecialties || ['penal', 'transito']);
+    this.syncProfileWithGlobalLawyers(profile);
+  },
+
+  updateExpYearsDisplay(tpDateStr) {
+    const years = this.calculateExpYears(tpDateStr);
+    const textEl = document.getElementById('text-exp-years-count');
+    if (textEl) {
+      textEl.textContent = `${years} Años de Ejercicio Legal Demostrable`;
+    }
+  },
+
+  updateSpecialtyPillsUI(activeSpecs) {
+    const pills = document.querySelectorAll('.btn-profile-spec-pill');
+    pills.forEach(pill => {
+      const spec = pill.getAttribute('data-spec');
+      if (activeSpecs.includes(spec)) {
+        pill.className = "btn-profile-spec-pill px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
+      } else {
+        pill.className = "btn-profile-spec-pill px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border bg-slate-800 text-slate-400 border-slate-700";
+      }
+    });
+  },
+
   setupEventListeners() {
     const btnToggleOnline = document.getElementById('btn-driver-toggle-online');
     if (btnToggleOnline) {
       btnToggleOnline.addEventListener('click', () => {
         this.toggleOnline();
+      });
+    }
+
+    const btnOpenProfile = document.getElementById('btn-open-lawyer-profile');
+    const btnCloseProfile = document.getElementById('btn-close-lawyer-profile');
+    const profileModal = document.getElementById('screen-lawyer-profile');
+
+    if (btnOpenProfile && profileModal) {
+      btnOpenProfile.addEventListener('click', () => {
+        this.loadProfileIntoUI();
+        profileModal.classList.remove('hidden');
+      });
+    }
+
+    if (btnCloseProfile && profileModal) {
+      btnCloseProfile.addEventListener('click', () => {
+        profileModal.classList.add('hidden');
+      });
+    }
+
+    const inputTpDate = document.getElementById('input-profile-tp-date');
+    if (inputTpDate) {
+      inputTpDate.addEventListener('change', (e) => {
+        this.updateExpYearsDisplay(e.target.value);
+      });
+    }
+
+    // Toggle specialty pills
+    const pillsContainer = document.getElementById('profile-specialties-pills');
+    if (pillsContainer) {
+      pillsContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-profile-spec-pill');
+        if (!btn) return;
+
+        const spec = btn.getAttribute('data-spec');
+        const profile = this.getProfile();
+        let specs = profile.activeSpecialties || [];
+
+        if (specs.includes(spec)) {
+          specs = specs.filter(s => s !== spec);
+        } else {
+          specs.push(spec);
+        }
+
+        profile.activeSpecialties = specs;
+        this.saveProfile(profile);
+        this.updateSpecialtyPillsUI(specs);
+        this.renderIncomingCases();
+      });
+    }
+
+    // Save profile form
+    const formProfile = document.getElementById('form-lawyer-profile');
+    if (formProfile) {
+      formProfile.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const profile = this.getProfile();
+        profile.tpNumber = document.getElementById('input-profile-tp').value.trim();
+        profile.ccNumber = document.getElementById('input-profile-cc').value.trim();
+        profile.tpIssueDate = document.getElementById('input-profile-tp-date').value;
+        profile.university = document.getElementById('input-profile-university').value.trim();
+        profile.virtualRateCOP = parseInt(document.getElementById('input-profile-rate-virtual').value) || 70000;
+        profile.travelRateCOP = parseInt(document.getElementById('input-profile-rate-travel').value) || 130000;
+
+        this.saveProfile(profile);
+
+        if (profileModal) profileModal.classList.add('hidden');
+        this.renderIncomingCases();
+
+        alert("¡Perfil profesional actualizado y verificado con éxito!");
       });
     }
 

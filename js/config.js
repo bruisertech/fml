@@ -17,7 +17,8 @@ const CONFIG = {
     ORDERS: 'abogao_user_orders',
     ROLE: 'abogao_current_role',
     SIMULATED_CASES: 'abogao_simulated_cases',
-    LAWYER_ONLINE: 'abogao_lawyer_online'
+    LAWYER_ONLINE: 'abogao_lawyer_online',
+    LAWYER_PROFILE: 'abogao_lawyer_profile'
   },
   DEFAULT_MODEL: 'gemini-2.5-flash',
   BASE_RATES: {
