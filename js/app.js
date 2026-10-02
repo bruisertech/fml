@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     currentLawyers: [],
     omittedLawyerIds: new Set(),
     pendingPaymentType: null, // 'videocall' o 'dispatch'
-    activeOrders: []
+    activeOrders: [],
+    currentRole: 'client' // 'client' o 'lawyer'
   };
 
   // 1. Inicializar Lucide Icons y Mapa
@@ -26,6 +27,81 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   MapController.initMap();
+  if (window.LawyerDriver) {
+    LawyerDriver.init();
+  }
+
+  // GESTIÓN DE ROLES (PORTAL SWITCHER)
+  const roleModal = document.getElementById('role-selection-modal');
+  const btnRoleClient = document.getElementById('btn-select-role-client');
+  const btnRoleLawyer = document.getElementById('btn-select-role-lawyer');
+  const btnToggleRole = document.getElementById('btn-toggle-role');
+  const headerRoleLabel = document.getElementById('header-role-label');
+  const selectModalRole = document.getElementById('select-modal-role');
+
+  const mainEl = document.querySelector('main');
+  const footerEl = document.querySelector('footer');
+  const screenLawyerDriver = document.getElementById('screen-lawyer-driver');
+
+  function setAppRole(role) {
+    state.currentRole = role;
+    localStorage.setItem(CONFIG.STORAGE_KEYS.ROLE, role);
+
+    if (headerRoleLabel) {
+      headerRoleLabel.textContent = role === 'lawyer' ? 'Abogado' : 'Cliente';
+    }
+
+    if (selectModalRole) {
+      selectModalRole.value = role;
+    }
+
+    if (role === 'lawyer') {
+      if (mainEl) mainEl.classList.add('hidden');
+      if (footerEl) footerEl.classList.add('hidden');
+      if (screenLawyerDriver) screenLawyerDriver.classList.remove('hidden');
+      if (window.LawyerDriver) LawyerDriver.updateOnlineUI();
+    } else {
+      if (screenLawyerDriver) screenLawyerDriver.classList.add('hidden');
+      if (mainEl) mainEl.classList.remove('hidden');
+      if (footerEl) footerEl.classList.remove('hidden');
+    }
+
+    if (window.lucide) lucide.createIcons();
+  }
+
+  const savedRole = localStorage.getItem(CONFIG.STORAGE_KEYS.ROLE);
+  if (!savedRole) {
+    if (roleModal) roleModal.classList.remove('hidden');
+  } else {
+    setAppRole(savedRole);
+  }
+
+  if (btnRoleClient) {
+    btnRoleClient.addEventListener('click', () => {
+      setAppRole('client');
+      if (roleModal) roleModal.classList.add('hidden');
+    });
+  }
+
+  if (btnRoleLawyer) {
+    btnRoleLawyer.addEventListener('click', () => {
+      setAppRole('lawyer');
+      if (roleModal) roleModal.classList.add('hidden');
+    });
+  }
+
+  if (btnToggleRole) {
+    btnToggleRole.addEventListener('click', () => {
+      const nextRole = state.currentRole === 'client' ? 'lawyer' : 'client';
+      setAppRole(nextRole);
+    });
+  }
+
+  if (selectModalRole) {
+    selectModalRole.addEventListener('change', (e) => {
+      setAppRole(e.target.value);
+    });
+  }
 
   function updateLawyersList() {
     const list = getLawyersWithDistance(
@@ -115,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnInjuryYes = document.getElementById('btn-injury-yes');
   const btnInjuryNo = document.getElementById('btn-injury-no');
   const banner123 = document.getElementById('banner-123-emergency');
+  const btnContinueLegal123 = document.getElementById('btn-continue-legal-123');
 
   if (btnInjuryYes) {
     btnInjuryYes.addEventListener('click', () => {
@@ -127,7 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
     btnInjuryNo.addEventListener('click', () => {
       state.hasInjuries = false;
       if (banner123) banner123.classList.add('hidden');
-      showTriageStep(3, "Especialidades de Urgencia");
+      showTriageStep(3, "Situación Crítica de Emergencia");
+    });
+  }
+
+  if (btnContinueLegal123) {
+    btnContinueLegal123.addEventListener('click', () => {
+      showTriageStep(3, "Situación Crítica de Emergencia");
     });
   }
 
@@ -240,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
           async (recordedBlob, base64Audio) => {
             isRecording = false;
             if (recordIcon) recordIcon.className = "w-3.5 h-3.5 text-red-500";
-            if (recordText) recordText.textContent = "Nota grabada ✓";
+            if (recordText) recordText.textContent = "Nota grabada";
             btnRecordAudio.classList.replace('bg-red-600', 'bg-slate-800');
             if (btnPlayAudio) btnPlayAudio.classList.remove('hidden');
             if (btnClearAudio) btnClearAudio.classList.remove('hidden');
@@ -408,13 +491,14 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="text-[9px] font-bold px-1.5 py-0.2 bg-slate-800 text-slate-300 rounded border border-slate-700">Opción ${index + 2}</span>
               <h5 class="text-xs font-bold text-white truncate group-hover:text-emerald-400 transition">${l.name}</h5>
             </div>
-            <div class="text-[10px] text-emerald-300 font-semibold truncate mt-0.5">
-              ✓ ${l.tpNumber || l.tp}
+            <div class="text-[10px] text-emerald-300 font-semibold truncate mt-0.5 flex items-center gap-1">
+              <i data-lucide="badge-check" class="w-3 h-3 text-emerald-400"></i>
+              <span>${l.tpNumber || l.tp}</span>
             </div>
             <div class="text-[10px] text-slate-400 flex items-center gap-2 mt-0.5">
               <span class="text-emerald-400 font-semibold">${l.specialty}</span>
               <span>•</span>
-              <span>★ ${l.rating}</span>
+              <span class="flex items-center gap-0.5"><i data-lucide="star" class="w-2.5 h-2.5 fill-amber-400 text-amber-400"></i> ${l.rating}</span>
               <span>•</span>
               <span>${l.distanceKm} km</span>
             </div>
@@ -693,7 +777,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btnTriggerApplepayBiometric.disabled = true;
 
       setTimeout(() => {
-        applepayModalBtnText.textContent = "✓ PAGO APROBADO CON APPLE PAY";
+        applepayModalBtnText.textContent = "PAGO APROBADO CON APPLE PAY";
         btnTriggerApplepayBiometric.disabled = false;
         applepayModalStatusMsg.classList.remove('hidden');
 
@@ -786,7 +870,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex-1 min-w-0">
               <h5 class="text-xs font-bold text-white truncate">${order.reassignedLawyer.name}</h5>
               <p class="text-[11px] text-emerald-400 font-semibold">${order.reassignedLawyer.specialty}</p>
-              <div class="text-[10px] text-emerald-300 font-bold">✓ ${order.reassignedLawyer.tp}</div>
+              <div class="text-[10px] text-emerald-300 font-bold flex items-center gap-1">
+                <i data-lucide="badge-check" class="w-3 h-3 text-emerald-400"></i>
+                <span>${order.reassignedLawyer.tp}</span>
+              </div>
             </div>
           </div>
 

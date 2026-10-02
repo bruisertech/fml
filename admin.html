@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-black text-white antialiased">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abogao – Panel de Administración & Entrenamiento</title>
+
+  <!-- Compiled Tailwind CSS -->
+  <link rel="stylesheet" href="css/tailwind.css">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-full bg-black font-sans text-white p-4 sm:p-6 md:p-8 max-w-5xl mx-auto space-y-6">
+
+  <!-- HEADER BRAND -->
+  <header class="flex items-center justify-between border-b border-slate-800 pb-4">
+    <div class="flex items-center space-x-3">
+      <div class="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg">
+        <i data-lucide="shield-check" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          <span>Abo<span class="text-emerald-400">gao</span> Admin</span>
+          <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Portal Privado</span>
+        </h1>
+        <p class="text-xs text-slate-400">Control de casos simulados, estado de la plataforma e inyección de datos para Cali</p>
+      </div>
+    </div>
+
+    <a href="index.html" class="flex items-center space-x-2 px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs font-bold transition active:scale-95 shadow-lg">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i>
+      <span class="hidden sm:inline">Volver a Abogao App</span>
+    </a>
+  </header>
+
+  <!-- PLATFORM METRICS DASHBOARD -->
+  <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-1 shadow-xl">
+      <div class="flex items-center justify-between text-slate-400 text-xs font-medium">
+        <span>Abogados Activos (Cali)</span>
+        <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i>
+      </div>
+      <div class="text-2xl font-extrabold text-white" id="stat-lawyers-count">26</div>
+      <div class="text-[11px] text-emerald-400 font-semibold">T.P. Verificada CSJ</div>
+    </div>
+
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-1 shadow-xl">
+      <div class="flex items-center justify-between text-slate-400 text-xs font-medium">
+        <span>Casos Simulados Activos</span>
+        <i data-lucide="siren" class="w-4 h-4 text-emerald-400"></i>
+      </div>
+      <div class="text-2xl font-extrabold text-white" id="stat-active-cases">3</div>
+      <div class="text-[11px] text-slate-400" id="stat-total-cases">de 3 totales</div>
+    </div>
+
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-1 shadow-xl">
+      <div class="flex items-center justify-between text-slate-400 text-xs font-medium">
+        <span>Estado Google Gemini API</span>
+        <i data-lucide="cpu" class="w-4 h-4 text-emerald-400"></i>
+      </div>
+      <div class="text-base font-extrabold text-white flex items-center gap-2 mt-1" id="stat-api-status">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Modo Test / Activo</span>
+      </div>
+      <div class="text-[11px] text-slate-400" id="stat-api-model">gemini-2.5-flash</div>
+    </div>
+  </section>
+
+  <!-- MAIN GRID: SIMULATED CASES MANAGEMENT + INJECTION FORM -->
+  <main class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- LEFT COLUMN: EXISTING SIMULATED CASES TOGGLES -->
+    <section class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="list-checks" class="w-5 h-5 text-emerald-400"></i>
+          <h2 class="text-base font-extrabold text-white">Casos de Prueba (Training)</h2>
+        </div>
+        <button id="btn-reset-data" class="px-3 py-1.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-300 border border-red-500/40 text-xs font-bold transition flex items-center gap-1 active:scale-95">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>Restablecer Estado</span>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400 leading-relaxed">
+        Activa o desactiva individualmente los casos que recibirán los abogados en su radar estilo Uber Driver en tiempo real.
+      </p>
+
+      <div id="admin-cases-list-container" class="space-y-3">
+        <!-- Rendered from js/admin.js -->
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: INJECT NEW CUSTOM SIMULATED CASE -->
+    <section class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl">
+      <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
+        <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
+        <h2 class="text-base font-extrabold text-white">Inyectar Nuevo Caso Personalizado</h2>
+      </div>
+
+      <form id="form-inject-case" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-medium text-slate-300 mb-1">Título Resumido del Caso:</label>
+          <input id="input-case-title" type="text" required placeholder="Ej. Retención de vehículo en CAI El Peñón..." class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Situación Crítica / Categoría:</label>
+            <select id="select-case-situation" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+              <option value="Accidente de tránsito con lesionados">Accidente de tránsito con lesionados</option>
+              <option value="Homicidio o Lesiones Personales">Homicidio o Lesiones Personales</option>
+              <option value="Captura en flagrancia / Retención">Captura en flagrancia / Retención</option>
+              <option value="Allanamiento o Procedimiento Policial en curso">Allanamiento / Procedimiento Policial</option>
+              <option value="Violencia Intrafamiliar o Riesgo Inminente">Violencia Intrafamiliar / Riesgo</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Ubicación / Barrio en Cali:</label>
+            <input id="input-case-neighborhood" type="text" required placeholder="Ej. El Peñón / San Antonio" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Tarifa en COP ($):</label>
+            <input id="input-case-rate" type="number" required value="140000" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Modalidad:</label>
+            <select id="select-case-mode" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+              <option value="Videollamada Express">Videollamada Express</option>
+              <option value="Desplazamiento Presencial">Desplazamiento Presencial</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Nombre del Cliente:</label>
+            <input id="input-client-name" type="text" required value="Carlos Eduardo Gómez" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Teléfono Móvil:</label>
+            <input id="input-client-phone" type="text" required value="318 765 4321" class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-300 mb-1">Mensaje o Transcripción del Cliente:</label>
+          <textarea id="input-client-prompt" rows="2" required placeholder="Describe lo que dice el cliente..." class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none resize-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs rounded-xl transition flex items-center justify-center space-x-2 active:scale-98 shadow-xl">
+          <i data-lucide="send" class="w-4 h-4"></i>
+          <span>Inyectar Caso en Vivo</span>
+        </button>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- JS SCRIPTS -->
+  <script src="js/config.js"></script>
+  <script src="js/lawyersData.js"></script>
+  <script src="js/lawyerDriver.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

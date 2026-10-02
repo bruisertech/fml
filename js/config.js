@@ -14,7 +14,10 @@ const CONFIG = {
   STORAGE_KEYS: {
     API_KEY: 'abogao_gemini_api_key',
     MODEL: 'abogao_gemini_model',
-    ORDERS: 'abogao_user_orders'
+    ORDERS: 'abogao_user_orders',
+    ROLE: 'abogao_current_role',
+    SIMULATED_CASES: 'abogao_simulated_cases',
+    LAWYER_ONLINE: 'abogao_lawyer_online'
   },
   DEFAULT_MODEL: 'gemini-2.5-flash',
   BASE_RATES: {
