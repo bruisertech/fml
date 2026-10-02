@@ -474,3 +474,85 @@ function procesosPorNivel(u) {
 
 /** Grupo de un proceso (cada área tiene los suyos) */
 function grupoDe(p) { return p && p.g && ABOGAO_GRUPOS[p.area] ? ABOGAO_GRUPOS[p.area][p.g] || null : null; }
+
+/** Objeto CATALOG para compatibilidad con la interfaz SPA de Abogao */
+const CATALOG = {
+  EMERGENCY_SPECIALTIES: [
+    { id: 'penal', name: 'Penal y Capturas', icon: 'shield-alert', color: 'red', desc: 'URI, Fiscalía, detenciones, flagrancia' },
+    { id: 'transito', name: 'Tránsito y Choques', icon: 'car', color: 'blue', desc: 'Choques, alcoholemia, inmovilización' },
+    { id: 'familia', name: 'Familia y Violencia', icon: 'heart-handshake', color: 'pink', desc: 'Comisaría 24h, custodia, alimentos' },
+    { id: 'laboral', name: 'Laboral y Despidos', icon: 'briefcase', color: 'orange', desc: 'Despidos, descargos, accidentes ARL' },
+    { id: 'civil', name: 'Civil y Contratos', icon: 'scale', color: 'purple', desc: 'Deudas, embargos, restituciones' }
+  ],
+  LEGAL_ROUTES: [
+    {
+      id: 'captura',
+      title: 'Ruta de Captura o Detención en Cali',
+      icon: 'siren',
+      badge: 'Urgencia 24H',
+      summary: 'Procedimiento legal inmediato tras la detención por parte de Policía o CTI.',
+      steps: [
+        'Verificación de derechos del capturado y lugar de traslado (URI / CAI / Estación).',
+        'Asistencia legal obligatoria en la audiencia de legalización de captura (36 horas máx).',
+        'Defensa técnica en imputación de cargos y medida de aseguramiento.'
+      ]
+    },
+    {
+      id: 'violencia',
+      title: 'Ruta de Protección por Violencia Intrafamiliar',
+      icon: 'shield-check',
+      badge: 'Atención Comisaría',
+      summary: 'Medidas de protección de emergencia ante agresiones o riesgo familiar.',
+      steps: [
+        'Solicitud de medida de protección provisional ante Comisaría de Familia (24 horas).',
+        'Dictamen de Medicina Legal y denuncia penal ante Fiscalía.',
+        'Seguimiento y orden de desalojo o restricción al agresor.'
+      ]
+    },
+    {
+      id: 'accidente',
+      title: 'Ruta en Accidente de Tránsito con Lesionados',
+      icon: 'car',
+      badge: 'Prioridad Médica / Legal',
+      summary: 'Atención a víctimas, croquis de tránsito y reclamación de pólizas SOAT.',
+      steps: [
+        'Verificación del Informe Policial de Accidentes de Tránsito (IPAT).',
+        'Coordinación con centros de salud y activación del amparo SOAT / Responsabilidad Civil.',
+        'Conciliación preprocesal o querella penal por lesiones culposas.'
+      ]
+    }
+  ],
+  CONSULTORIO_PACKAGES: [
+    {
+      id: 'express',
+      name: 'Plan Acompañamiento Express',
+      priceCOP: 150000,
+      durationDays: 7,
+      desc: 'Asesoría prioritaria continua por chat y llamadas durante 7 días.',
+      features: [
+        'Atención ilimitada por chat cifrado P2P',
+        'Revisión de hasta 3 documentos legales',
+        'Orientación directa con especialista asignado'
+      ]
+    },
+    {
+      id: 'mensual',
+      name: 'Plan Consultorio Mensual',
+      priceCOP: 450000,
+      durationDays: 30,
+      desc: 'Protección jurídica integral para personas o pequeños negocios por 30 días.',
+      features: [
+        'Asesoría jurídica telefónica y virtual sin límites',
+        'Elaboración y contestación de derechos de petición / tutelas',
+        'Acompañamiento en diligencias administrativas o conciliaciones en Cali'
+      ]
+    }
+  ]
+};
+
+if (typeof window !== 'undefined') {
+  window.CATALOG = CATALOG;
+  window.ABOGAO_AREAS = ABOGAO_AREAS;
+  window.ABOGAO_PROCESOS = ABOGAO_PROCESOS;
+  window.ABOGAO_RUTAS = ABOGAO_RUTAS;
+}
