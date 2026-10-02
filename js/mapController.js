@@ -11,11 +11,12 @@ const MapController = {
   radarOverlayEl: null,
 
   initMap() {
-    const defaultCoords = this.userLocation;
+    const defaultCoords = this.userLocation || (CONFIG ? CONFIG.CALI_COORDS : { lat: 3.4516, lng: -76.5320 });
+    const defaultZoom = (CONFIG && CONFIG.DEFAULT_ZOOM) ? CONFIG.DEFAULT_ZOOM : 14;
     this.map = L.map('map', {
       zoomControl: false,
       attributionControl: true
-    }).setView([defaultCoords.lat, defaultCoords.lng], CONFIG ? CONFIG.DEFAULTZOOM : 14);
+    }).setView([defaultCoords.lat, defaultCoords.lng], defaultZoom);
 
     // Standard OpenStreetMap tile layer with dark CSS filter
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -120,5 +121,18 @@ const MapController = {
 
   highlightLawyerMarker(lawyerId) {
     // Optional highlight logic
+  },
+
+  triggerRadarAnimation(durationMs = 2000, onComplete) {
+    if (this.map) {
+      const currentZoom = this.map.getZoom();
+      this.map.setZoom(currentZoom - 1, { animate: true });
+      setTimeout(() => {
+        this.map.setZoom(currentZoom, { animate: true });
+        if (onComplete) onComplete();
+      }, durationMs);
+    } else if (onComplete) {
+      onComplete();
+    }
   }
 };

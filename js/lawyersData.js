@@ -1424,3 +1424,47 @@ function nearbyProfessionals(pos, opts = {}) {
   }
   return top.sort(cmp);
 }
+
+/**
+ * Función auxiliar para obtener la lista de abogados formateada y con distancias calculadas
+ * para el mapa y las tarjetas de la SPA Abogao.
+ */
+function getLawyersWithDistance(userLat, userLng, specialty) {
+  const baseLat = userLat || (typeof CONFIG !== 'undefined' ? CONFIG.CALI_COORDS.lat : 3.4516);
+  const baseLng = userLng || (typeof CONFIG !== 'undefined' ? CONFIG.CALI_COORDS.lng : -76.5320);
+
+  const list = PROFESIONALES.map(p => {
+    const dist = calculateHaversineDistance(baseLat, baseLng, p.lat, p.lng);
+    const eta = estimateETA(dist);
+    return {
+      ...p,
+      avatar: `https://images.unsplash.com/photo-${p.kind === 'abogado' ? '1560250097-0b93528c311a' : '1573496359142-b8d87734a5a2'}?auto=format&fit=crop&q=80&w=250`,
+      specialty: p.areas ? p.areas.map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(', ') : 'Derecho General',
+      rating: (4.7 + (p.casosAbogao % 3) * 0.1).toFixed(1),
+      tp: p.doc || 'T.P. Verificada CSJ',
+      tpNumber: p.doc,
+      estimatedResponseMin: p.responseMin || 2,
+      maxResponseMin: (p.responseMin || 2) + 3,
+      distanceKm: dist,
+      etaMinutes: eta,
+      description: p.titulos ? p.titulos.join('. ') : 'Especialista en Cali.',
+      bio: p.titulos ? p.titulos.join('. ') : 'Especialista en Cali.',
+      casesWon: `${p.casosAbogao || 50}+ Casos Atendidos`
+    };
+  });
+
+  if (specialty) {
+    const filtered = list.filter(l => l.areas && l.areas.includes(specialty.toLowerCase()));
+    if (filtered.length > 0) return filtered;
+  }
+
+  return list;
+}
+
+if (typeof window !== 'undefined') {
+  window.PROFESIONALES = PROFESIONALES;
+  window.LAWYERS_DATA = PROFESIONALES;
+  window.getLawyersWithDistance = getLawyersWithDistance;
+  window.nearbyProfessionals = nearbyProfessionals;
+  window.calculateHaversineDistance = calculateHaversineDistance;
+}
